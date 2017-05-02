@@ -1,0 +1,53 @@
+body {
+    padding-top: 70px;
+}
+
+p {
+    font-size: 16px;
+}
+
+.navbar-brand {
+    margin-bottom: 0px;
+}
+
+#results {
+    display: none;
+}
+
+#results th, #results td {
+    text-align: center;
+}
+
+#count-text {
+    display: none;
+}
+
+.select2 {
+    width: 100% !important;
+}
+
+.btn {
+    font-size: 16px;
+    width: 200px;
+    box-shadow: 1px 1px 5px #888888;
+}
+
+.btn-sky {
+    color: #fff;
+    background-color: #0bacd3;
+    border-bottom: 2px solid #098aa9;
+}
+
+.btn-sky:hover,.btn-sky.active:focus, .btn-sky:focus, .open > .dropdown-toggle.btn-sky {
+    color: #fff;
+    background-color: #29b6d8;
+    border-bottom: 2px solid #2192ad;
+    outline: none;
+}
+
+.btn-sky:active, .btn-sky.active {
+    color: #fff;
+    background-color: #0a97b9;
+    border-top: 2px solid #087994;
+    outline-offset: none;
+}

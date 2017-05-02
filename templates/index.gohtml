@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Amazon Surfer">
+    <meta name="author" content="Achillezz">
+
+    <title>Amazon Surfer</title>
+
+    <link href="/assets/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/assets/css/font-awesome.min.css" rel="stylesheet">
+    <link href="/assets/css/select2.min.css" rel="stylesheet">
+    <link href="/assets/css/app.css" rel="stylesheet">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+        <div class="container">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <p class="navbar-brand">Amazon Surfer</p>
+            </div>
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <!-- Page Content -->
+    <div class="container">
+
+        <div class="row">
+            <div class="col-lg-12 text-center">
+                <form class="form-inline" id="search-form" method="POST" action="search">
+
+					<h4><strong>Find the perfect products with just a few clicks</strong></h4>
+
+					<div class="row">
+						<select id="categories" multiple="multiple">
+							{{ range $key, $value := .Categories }}
+							<option value="{{ $key }}">{{ $value }}</option>
+							{{ end }}
+						</select>
+					</div>
+
+					<br/>
+
+					<div class="row">
+						<p>BSR</p>
+						<div class="input-group">
+							<div class="input-group-addon">Min</div>
+							<input type="text" name="min-bsr" id="min-bsr" class="form-control" placeholder="Enter min BSR" value="501">
+						</div>
+						<div class="input-group">
+							<div class="input-group-addon">Max</div>
+							<input type="text" name="max-bsr" id="max-bsr" class="form-control" placeholder="Enter max BSR" value="10000">
+						</div>
+					</div>
+
+					<br/>
+
+					<div class="row">
+						<p>Reviews</p>
+						<div class="input-group">
+							<div class="input-group-addon">Min</div>
+							<input type="text" name="min-reviews" id="min-reviews" class="form-control" placeholder="Enter min reviews" value="0">
+						</div>
+						<div class="input-group">
+							<div class="input-group-addon">Max</div>
+							<input type="text" name="max-reviews" id="max-reviews" class="form-control" placeholder="Enter max reviews" value="1000">
+						</div>
+					</div>
+
+					<br/>
+
+					<div class="row">
+						<p>Maximum Size (inches)</p>
+						<div class="input-group">
+							<div class="input-group-addon">Length</div>
+							<input type="text" name="length" id="length" class="form-control" placeholder="Enter max length" value="15">
+						</div>
+						<div class="input-group">
+							<div class="input-group-addon">Width</div>
+							<input type="text" name="width" id="width" class="form-control" placeholder="Enter max width" value="12">
+						</div>
+						<div class="input-group">
+							<div class="input-group-addon">Height</div>
+							<input type="text" name="height" id="height" class="form-control" placeholder="Enter max height" value="0.75">
+						</div>
+					</div>
+
+					<br/>
+
+					<div class="row">
+						<p>Maximum Shipping Weight (ounces)</p>
+						<div class="input-group">
+							<div class="input-group-addon">Weight</div>
+							<input type="text" name="max-weight" id="max-weight" class="form-control" placeholder="Enter max weight" value="12">
+						</div>
+					</div>
+
+					<br/><br/>
+
+					<button type="button" class="btn btn-sky btn-lg" id="search-button">
+						<i class="fa fa-search" aria-hidden="true"></i> Search Now
+					</button>
+
+                </form>
+            </div>
+        </div>
+        <!-- /.row -->
+
+		<br/>
+		
+		<p id="count-text"><strong>Found: <span id=count>0</span></strong></p>
+
+		<table id="results" class="table table-bordered table-hover table-responsive">
+			<thead>
+				<tr>
+					<th>Products</th>
+				</tr>
+			</thead>
+			<tbody></tbody>
+		</table>
+
+    </div>
+    <!-- /.container -->
+
+    <script src="/assets/js/jquery.min.js"></script>
+    <script src="/assets/js/bootstrap.min.js"></script>
+    <script src="/assets/js/select2.full.min.js"></script>
+    <script src="/assets/js/app.js"></script>
+
+	<script>
+	$("#search-button").click(function(e){
+		e.preventDefault();
+		var form = $("#search-form").serializeArray();
+		$.ajax({
+			type: "POST",
+			url: "search",
+			data: form,
+			success: function(data) {
+				if (data === "ok") {
+					$('#count-text').show();
+					var socket = new WebSocket("ws://{{.Host}}/process");
+					socket.onclose = function() {
+						alert("Connection has been closed.");
+					}
+					socket.onmessage = function(e) {
+						$('#results').show();
+						var res = JSON.parse(e.data);
+						var row = '<tr><td>' + '<a target="_blank" href="' + res.link +  '">' + res.name + '</a></td></tr>';
+						$('#results tbody').append(row);
+						var count = parseInt($('#count').html()) + 1;
+						$('#count').html(count);
+					}
+				}
+			}
+		});
+	});
+	</script>
+
+
+</body>
+
+</html>
