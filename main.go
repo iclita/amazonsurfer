@@ -9,7 +9,7 @@ import (
 	"net/http"
 	"path/filepath"
 
-	"github.com/achillezz/amazonsurfer/pkg/crawler"
+	"bitbucket.org/achillezz/amazonsurfer/crawler"
 	"github.com/gorilla/websocket"
 )
 
