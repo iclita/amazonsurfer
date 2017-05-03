@@ -2,11 +2,11 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"html/template"
 	"io"
 	"log"
 	"net/http"
+	"os"
 	"path/filepath"
 
 	"bitbucket.org/achillezz/amazonsurfer/crawler"
@@ -27,6 +27,7 @@ const (
 var upgrader = &websocket.Upgrader{ReadBufferSize: socketBufferSize, WriteBufferSize: socketBufferSize}
 
 func init() {
+	log.SetOutput(os.Stdout)
 	tpl = template.Must(template.ParseFiles(filepath.Join("templates", "index.gohtml")))
 }
 
@@ -48,11 +49,11 @@ func index(w http.ResponseWriter, r *http.Request) {
 
 func search(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "POST" {
-		log.Fatalln("Method should be POST")
+		log.Fatal("Method should be POST")
 	}
 	err := crw.MapOptions(r)
 	if err != nil {
-		fmt.Println(err)
+		io.WriteString(w, err.Error())
 	}
 	io.WriteString(w, "ok")
 }
@@ -81,7 +82,7 @@ func main() {
 	http.HandleFunc("/search", search)
 	http.HandleFunc("/process", process)
 	http.HandleFunc("/", index)
-	fmt.Printf("Listening on port %s\n", *port)
+	log.Printf("Listening on port %s\n", *port)
 	addr := ":" + *port
 	log.Fatal(http.ListenAndServe(addr, nil))
 }
