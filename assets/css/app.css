@@ -7,7 +7,14 @@ p {
 }
 
 .navbar-brand {
+    color: #fff !important;
     margin-bottom: 0px;
+}
+
+.navbar-sky {
+    background-color: #29b6d8 !important;
+    border-color: #29b6d8 !important;
+    margin-bottom: 0px !important;
 }
 
 #results {

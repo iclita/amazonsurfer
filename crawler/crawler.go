@@ -24,6 +24,8 @@ type Category struct {
 }
 
 type options struct {
+	minPrice   int
+	maxPrice   int
 	minBSR     int
 	maxBSR     int
 	minReviews int
@@ -33,6 +35,16 @@ type options struct {
 }
 
 func (crw *Crawler) MapOptions(r *http.Request) error {
+
+	minPrice, err := strconv.Atoi(r.FormValue("min-price"))
+	if err != nil {
+		return err
+	}
+
+	maxPrice, err := strconv.Atoi(r.FormValue("max-price"))
+	if err != nil {
+		return err
+	}
 
 	minBSR, err := strconv.Atoi(r.FormValue("min-bsr"))
 	if err != nil {
@@ -76,6 +88,8 @@ func (crw *Crawler) MapOptions(r *http.Request) error {
 		return err
 	}
 
+	crw.opts.minPrice = minPrice
+	crw.opts.maxPrice = maxPrice
 	crw.opts.minBSR = minBSR
 	crw.opts.maxBSR = maxBSR
 	crw.opts.minReviews = minReviews

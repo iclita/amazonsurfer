@@ -1,12 +1,5 @@
 package crawler
 
-var amazonLaunchpad = Category{
-	ID:            0,
-	Name:          "Amazon Launchpad",
-	Link:          "https://www.amazon.com/Best-Sellers-Amazon-Launchpad/zgbs/boost",
-	SubCategories: nil,
-}
-
 var appliances = Category{
 	ID:            1,
 	Name:          "Appliances",
@@ -260,7 +253,6 @@ var videoGames = Category{
 }
 
 var categories = [...]Category{
-	amazonLaunchpad,
 	appliances,
 	appsGames,
 	artsCraftsSewing,

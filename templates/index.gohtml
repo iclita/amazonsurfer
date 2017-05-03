@@ -28,7 +28,7 @@
 <body>
 
     <!-- Navigation -->
-    <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+    <nav class="navbar navbar-inverse navbar-fixed-top navbar-sky" role="navigation">
         <div class="container">
             <!-- Brand and toggle get grouped for better mobile display -->
             <div class="navbar-header">
@@ -38,7 +38,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <p class="navbar-brand">Amazon Surfer</p>
+                <a class="navbar-brand" href="/">Amazon Surfer &mdash; Find the perfect products with just a few clicks</a>
             </div>
         </div>
         <!-- /.container -->
@@ -51,14 +51,26 @@
             <div class="col-lg-12 text-center">
                 <form class="form-inline" id="search-form" method="POST" action="search">
 
-					<h4><strong>Find the perfect products with just a few clicks</strong></h4>
-
 					<div class="row">
 						<select id="categories" multiple="multiple">
 							{{ range $key, $value := .Categories }}
 							<option value="{{ $key }}">{{ $value }}</option>
 							{{ end }}
 						</select>
+					</div>
+
+					<br/>
+
+					<div class="row">
+						<p>Price ($)</p>
+						<div class="input-group">
+							<div class="input-group-addon">Min</div>
+							<input type="text" name="min-price" id="min-price" class="form-control" placeholder="Enter min price" value="10">
+						</div>
+						<div class="input-group">
+							<div class="input-group-addon">Max</div>
+							<input type="text" name="max-price" id="max-price" class="form-control" placeholder="Enter max price" value="30">
+						</div>
 					</div>
 
 					<br/>
