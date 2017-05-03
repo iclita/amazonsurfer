@@ -54,6 +54,7 @@ func search(w http.ResponseWriter, r *http.Request) {
 	err := crw.MapOptions(r)
 	if err != nil {
 		io.WriteString(w, err.Error())
+		return
 	}
 	io.WriteString(w, "ok")
 }
