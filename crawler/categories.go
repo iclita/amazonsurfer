@@ -2,11 +2,20 @@ package crawler
 
 import "strconv"
 
+const base = "https://www.amazon.com"
+
 var appliances = category{
 	id:   1,
 	name: "Appliances",
 	slug: "appliances",
-	subs: nil,
+	subs: []category{
+		category{
+			3741261,
+			"Cooktops",
+			"Best-Sellers-Appliances-Cooktops",
+			nil,
+		},
+	},
 }
 
 var appsGames = category{

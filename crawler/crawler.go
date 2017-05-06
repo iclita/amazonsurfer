@@ -1,7 +1,10 @@
 package crawler
 
 import (
+	"errors"
+	"log"
 	"net/http"
+	"path"
 	"strconv"
 	"time"
 )
@@ -107,6 +110,36 @@ func (crw *Crawler) MapOptions(r *http.Request) error {
 	crw.opts.maxWeight = maxWeight
 
 	return nil
+}
+
+func (cat *category) getLinks() ([]string, error) {
+	links := make([]string, len(cat.subs))
+	if cat.subs == nil {
+		return nil, errors.New("No subcategories found")
+	}
+	for _, sub := range cat.subs {
+		sid := strconv.Itoa(int(sub.id))
+		link := path.Join(base, sub.slug, "zgbs", cat.slug, sid)
+		links = append(links, link)
+	}
+	return links, nil
+}
+
+func (crw *Crawler) getLinks() []string {
+	var length uint16
+	for _, cat := range crw.opts.categories {
+		length += uint16(len(cat.subs))
+	}
+	links := make([]string, length)
+	for _, cat := range crw.opts.categories {
+		clinks, err := cat.getLinks()
+		if err != nil {
+			log.Println(err)
+			continue
+		}
+		links = append(links, clinks...)
+	}
+	return links
 }
 
 // Run searches for products and sends them on the channel to be received in the main goroutine
