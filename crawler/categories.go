@@ -1,5 +1,7 @@
 package crawler
 
+import "strconv"
+
 var appliances = Category{
 	ID:            1,
 	Name:          "Appliances",
@@ -298,4 +300,26 @@ func GetCategories() map[uint8]string {
 	}
 
 	return m
+}
+
+func filterCategories(catIDs []string) ([]Category, error) {
+	if len(catIDs) == 0 {
+		return nil, nil
+	}
+	cats := make([]Category, len(catIDs))
+	for _, id := range catIDs {
+		id, err := strconv.ParseUint(id, 10, 8)
+		if err != nil {
+			return nil, err
+		}
+		catID := uint8(id)
+		for _, c := range categories {
+			if catID == c.ID {
+				cats = append(cats, c)
+				break
+			}
+		}
+	}
+
+	return cats, nil
 }

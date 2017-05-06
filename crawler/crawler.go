@@ -24,6 +24,7 @@ type Category struct {
 }
 
 type options struct {
+	categories []Category
 	minPrice   float64
 	maxPrice   float64
 	minBSR     int
@@ -87,6 +88,14 @@ func (crw *Crawler) MapOptions(r *http.Request) error {
 	if err != nil {
 		return err
 	}
+
+	cats, err := filterCategories(r.Form["categories"])
+
+	if err != nil {
+		return err
+	}
+
+	crw.opts.categories = cats
 
 	crw.opts.minPrice = minPrice
 	crw.opts.maxPrice = maxPrice

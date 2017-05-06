@@ -52,7 +52,7 @@
                 <form class="form-inline" id="search-form" method="POST" action="search">
 
 					<div class="row">
-						<select id="categories" multiple="multiple">
+						<select id="categories" name="categories" multiple="multiple">
 							{{ range $key, $value := .Categories }}
 							<option value="{{ $key }}">{{ $value }}</option>
 							{{ end }}

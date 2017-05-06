@@ -51,6 +51,9 @@ func search(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "POST" {
 		log.Fatal("Method should be POST")
 	}
+	if err := r.ParseForm(); err != nil {
+		log.Fatal("Error parsing the form")
+	}
 	err := crw.MapOptions(r)
 	if err != nil {
 		io.WriteString(w, err.Error())
