@@ -2,259 +2,259 @@ package crawler
 
 import "strconv"
 
-var appliances = Category{
-	ID:            1,
-	Name:          "Appliances",
-	Link:          "https://www.amazon.com/Best-Sellers-Appliances/zgbs/appliances",
-	SubCategories: nil,
+var appliances = category{
+	id:   1,
+	name: "Appliances",
+	slug: "appliances",
+	subs: nil,
 }
 
-var appsGames = Category{
-	ID:            2,
-	Name:          "Apps & Games",
-	Link:          "https://www.amazon.com/Best-Sellers-Appstore-Android/zgbs/mobile-apps",
-	SubCategories: nil,
+var appsGames = category{
+	id:   2,
+	name: "Apps & Games",
+	slug: "mobile-apps",
+	subs: nil,
 }
 
-var artsCraftsSewing = Category{
-	ID:            3,
-	Name:          "Arts, Crafts & Sewing",
-	Link:          "https://www.amazon.com/Best-Sellers-Arts-Crafts-Sewing/zgbs/arts-crafts",
-	SubCategories: nil,
+var artsCraftsSewing = category{
+	id:   3,
+	name: "Arts, Crafts & Sewing",
+	slug: "arts-crafts",
+	subs: nil,
 }
 
-var automotive = Category{
-	ID:            4,
-	Name:          "Automotive",
-	Link:          "https://www.amazon.com/Best-Sellers-Automotive/zgbs/automotive",
-	SubCategories: nil,
+var automotive = category{
+	id:   4,
+	name: "Automotive",
+	slug: "automotive",
+	subs: nil,
 }
 
-var baby = Category{
-	ID:            5,
-	Name:          "Baby",
-	Link:          "https://www.amazon.com/Best-Sellers-Baby/zgbs/baby-products",
-	SubCategories: nil,
+var baby = category{
+	id:   5,
+	name: "Baby",
+	slug: "baby-products",
+	subs: nil,
 }
 
-var beautyPersonalCare = Category{
-	ID:            6,
-	Name:          "Beauty & Personal Care",
-	Link:          "https://www.amazon.com/Best-Sellers-Beauty/zgbs/beauty",
-	SubCategories: nil,
+var beautyPersonalCare = category{
+	id:   6,
+	name: "Beauty & Personal Care",
+	slug: "beauty",
+	subs: nil,
 }
 
-var books = Category{
-	ID:            7,
-	Name:          "Books",
-	Link:          "https://www.amazon.com/best-sellers-books-Amazon/zgbs/books",
-	SubCategories: nil,
+var books = category{
+	id:   7,
+	name: "Books",
+	slug: "books",
+	subs: nil,
 }
 
-var cDsVinyl = Category{
-	ID:            8,
-	Name:          "CDs & Vinyl",
-	Link:          "https://www.amazon.com/best-sellers-music-albums/zgbs/music",
-	SubCategories: nil,
+var cDsVinyl = category{
+	id:   8,
+	name: "CDs & Vinyl",
+	slug: "music",
+	subs: nil,
 }
 
-var cameraPhoto = Category{
-	ID:            9,
-	Name:          "Camera & Photo",
-	Link:          "https://www.amazon.com/best-sellers-camera-photo/zgbs/photo",
-	SubCategories: nil,
+var cameraPhoto = category{
+	id:   9,
+	name: "Camera & Photo",
+	slug: "photo",
+	subs: nil,
 }
 
-var cellPhonesAccessories = Category{
-	ID:            10,
-	Name:          "Cell Phones & Accessories",
-	Link:          "https://www.amazon.com/Best-Sellers-Cell-Phones-Accessories/zgbs/wireless",
-	SubCategories: nil,
+var cellPhonesAccessories = category{
+	id:   10,
+	name: "Cell Phones & Accessories",
+	slug: "wireless",
+	subs: nil,
 }
 
-var clothingShoesJewelry = Category{
-	ID:            11,
-	Name:          "Clothing, Shoes & Jewelry",
-	Link:          "https://www.amazon.com/Best-Sellers/zgbs/fashion",
-	SubCategories: nil,
+var clothingShoesJewelry = category{
+	id:   11,
+	name: "Clothing, Shoes & Jewelry",
+	slug: "fashion",
+	subs: nil,
 }
 
-var collectibleCoins = Category{
-	ID:            12,
-	Name:          "Collectible Coins",
-	Link:          "https://www.amazon.com/Best-Sellers-Collectible-Coins/zgbs/coins",
-	SubCategories: nil,
+var collectibleCoins = category{
+	id:   12,
+	name: "Collectible Coins",
+	slug: "coins",
+	subs: nil,
 }
 
-var computersAccessories = Category{
-	ID:            13,
-	Name:          "Computers & Accessories",
-	Link:          "https://www.amazon.com/Best-Sellers-Computers-Accessories/zgbs/pc",
-	SubCategories: nil,
+var computersAccessories = category{
+	id:   13,
+	name: "Computers & Accessories",
+	slug: "pc",
+	subs: nil,
 }
 
-var digitalMusic = Category{
-	ID:            14,
-	Name:          "Digital Music",
-	Link:          "https://www.amazon.com/Best-Sellers-MP3-Downloads/zgbs/dmusic",
-	SubCategories: nil,
+var digitalMusic = category{
+	id:   14,
+	name: "Digital Music",
+	slug: "dmusic",
+	subs: nil,
 }
 
-var electronics = Category{
-	ID:            15,
-	Name:          "Electronics",
-	Link:          "https://www.amazon.com/Best-Sellers-Electronics/zgbs/electronics",
-	SubCategories: nil,
+var electronics = category{
+	id:   15,
+	name: "Electronics",
+	slug: "electronics",
+	subs: nil,
 }
 
-var entertainmentCollectibles = Category{
-	ID:            16,
-	Name:          "Entertainment Collectibles",
-	Link:          "https://www.amazon.com/Best-Sellers-Entertainment-Collectibles/zgbs/entertainment-collectibles",
-	SubCategories: nil,
+var entertainmentCollectibles = category{
+	id:   16,
+	name: "Entertainment Collectibles",
+	slug: "entertainment-collectibles",
+	subs: nil,
 }
 
-var giftCards = Category{
-	ID:            17,
-	Name:          "Gift Cards",
-	Link:          "https://www.amazon.com/Best-Sellers-Gift-Cards/zgbs/gift-cards",
-	SubCategories: nil,
+var giftCards = category{
+	id:   17,
+	name: "Gift Cards",
+	slug: "gift-cards",
+	subs: nil,
 }
 
-var groceryGourmetFood = Category{
-	ID:            18,
-	Name:          "Grocery & Gourmet Food",
-	Link:          "https://www.amazon.com/Best-Sellers-Grocery-Gourmet-Food/zgbs/grocery",
-	SubCategories: nil,
+var groceryGourmetFood = category{
+	id:   18,
+	name: "Grocery & Gourmet Food",
+	slug: "grocery",
+	subs: nil,
 }
 
-var healthHousehold = Category{
-	ID:            19,
-	Name:          "Health & Household",
-	Link:          "https://www.amazon.com/Best-Sellers-Health-Personal-Care/zgbs/hpc",
-	SubCategories: nil,
+var healthHousehold = category{
+	id:   19,
+	name: "Health & Household",
+	slug: "hpc",
+	subs: nil,
 }
 
-var homeKitchen = Category{
-	ID:            20,
-	Name:          "Home & Kitchen",
-	Link:          "https://www.amazon.com/Best-Sellers-Home-Kitchen/zgbs/home-garden",
-	SubCategories: nil,
+var homeKitchen = category{
+	id:   20,
+	name: "Home & Kitchen",
+	slug: "home-garden",
+	subs: nil,
 }
 
-var industrialScientific = Category{
-	ID:            21,
-	Name:          "Industrial & Scientific",
-	Link:          "https://www.amazon.com/Best-Sellers-Industrial-Scientific/zgbs/industrial",
-	SubCategories: nil,
+var industrialScientific = category{
+	id:   21,
+	name: "Industrial & Scientific",
+	slug: "industrial",
+	subs: nil,
 }
 
-var kindleStore = Category{
-	ID:            22,
-	Name:          "Kindle Store",
-	Link:          "https://www.amazon.com/Best-Sellers-Kindle-Store/zgbs/digital-text",
-	SubCategories: nil,
+var kindleStore = category{
+	id:   22,
+	name: "Kindle Store",
+	slug: "digital-text",
+	subs: nil,
 }
 
-var kitchenDining = Category{
-	ID:            23,
-	Name:          "Kitchen & Dining",
-	Link:          "https://www.amazon.com/Best-Sellers-Kitchen-Dining/zgbs/kitchen",
-	SubCategories: nil,
+var kitchenDining = category{
+	id:   23,
+	name: "Kitchen & Dining",
+	slug: "kitchen",
+	subs: nil,
 }
 
-var magazineSubscriptions = Category{
-	ID:            24,
-	Name:          "Magazine Subscriptions",
-	Link:          "https://www.amazon.com/Best-Sellers-Magazines/zgbs/magazines",
-	SubCategories: nil,
+var magazineSubscriptions = category{
+	id:   24,
+	name: "Magazine Subscriptions",
+	slug: "magazines",
+	subs: nil,
 }
 
-var moviesTV = Category{
-	ID:            25,
-	Name:          "Movies & TV",
-	Link:          "https://www.amazon.com/best-sellers-movies-TV-DVD-Blu-ray/zgbs/movies-tv",
-	SubCategories: nil,
+var moviesTV = category{
+	id:   25,
+	name: "Movies & TV",
+	slug: "movies-tv",
+	subs: nil,
 }
 
-var musicalInstruments = Category{
-	ID:            26,
-	Name:          "Musical Instruments",
-	Link:          "https://www.amazon.com/Best-Sellers-Musical-Instruments/zgbs/musical-instruments",
-	SubCategories: nil,
+var musicalInstruments = category{
+	id:   26,
+	name: "Musical Instruments",
+	slug: "musical-instruments",
+	subs: nil,
 }
 
-var officeProducts = Category{
-	ID:            27,
-	Name:          "Office Products",
-	Link:          "https://www.amazon.com/Best-Sellers-Office-Products/zgbs/office-products",
-	SubCategories: nil,
+var officeProducts = category{
+	id:   27,
+	name: "Office Products",
+	slug: "office-products",
+	subs: nil,
 }
 
-var patioLawnGarden = Category{
-	ID:            28,
-	Name:          "Patio, Lawn & Garden",
-	Link:          "https://www.amazon.com/Best-Sellers-Patio-Lawn-Garden/zgbs/lawn-garden",
-	SubCategories: nil,
+var patioLawnGarden = category{
+	id:   28,
+	name: "Patio, Lawn & Garden",
+	slug: "lawn-garden",
+	subs: nil,
 }
 
-var petSupplies = Category{
-	ID:            29,
-	Name:          "Pet Supplies",
-	Link:          "https://www.amazon.com/Best-Sellers-Pet-Supplies/zgbs/pet-supplies",
-	SubCategories: nil,
+var petSupplies = category{
+	id:   29,
+	name: "Pet Supplies",
+	slug: "pet-supplies",
+	subs: nil,
 }
 
-var primePantry = Category{
-	ID:            30,
-	Name:          "Prime Pantry",
-	Link:          "https://www.amazon.com/Best-Sellers-Prime-Pantry/zgbs/pantry",
-	SubCategories: nil,
+var primePantry = category{
+	id:   30,
+	name: "Prime Pantry",
+	slug: "pantry",
+	subs: nil,
 }
 
-var software = Category{
-	ID:            31,
-	Name:          "Software",
-	Link:          "https://www.amazon.com/best-sellers-software/zgbs/software",
-	SubCategories: nil,
+var software = category{
+	id:   31,
+	name: "Software",
+	slug: "software",
+	subs: nil,
 }
 
-var sportsOutdoors = Category{
-	ID:            32,
-	Name:          "Sports & Outdoors",
-	Link:          "https://www.amazon.com/Best-Sellers-Sports-Outdoors/zgbs/sporting-goods",
-	SubCategories: nil,
+var sportsOutdoors = category{
+	id:   32,
+	name: "Sports & Outdoors",
+	slug: "sporting-goods",
+	subs: nil,
 }
 
-var sportsCollectibles = Category{
-	ID:            33,
-	Name:          "Sports Collectibles",
-	Link:          "https://www.amazon.com/Best-Sellers-Sports-Collectibles/zgbs/sports-collectibles",
-	SubCategories: nil,
+var sportsCollectibles = category{
+	id:   33,
+	name: "Sports Collectibles",
+	slug: "sports-collectibles",
+	subs: nil,
 }
 
-var toolsHomeImprovement = Category{
-	ID:            34,
-	Name:          "Tools & Home Improvement",
-	Link:          "https://www.amazon.com/Best-Sellers-Home-Improvement/zgbs/hi",
-	SubCategories: nil,
+var toolsHomeImprovement = category{
+	id:   34,
+	name: "Tools & Home Improvement",
+	slug: "hi",
+	subs: nil,
 }
 
-var toysGames = Category{
-	ID:            35,
-	Name:          "Toys & Games",
-	Link:          "https://www.amazon.com/Best-Sellers-Toys-Games/zgbs/toys-and-games",
-	SubCategories: nil,
+var toysGames = category{
+	id:   35,
+	name: "Toys & Games",
+	slug: "toys-and-games",
+	subs: nil,
 }
 
-var videoGames = Category{
-	ID:            36,
-	Name:          "Video Games",
-	Link:          "https://www.amazon.com/best-sellers-video-games/zgbs/videogames",
-	SubCategories: nil,
+var videoGames = category{
+	id:   36,
+	name: "Video Games",
+	slug: "videogames",
+	subs: nil,
 }
 
-var categories = [...]Category{
+var categories = [...]category{
 	appliances,
 	appsGames,
 	artsCraftsSewing,
@@ -296,17 +296,17 @@ var categories = [...]Category{
 func GetCategories() map[uint8]string {
 	m := make(map[uint8]string)
 	for _, v := range categories {
-		m[v.ID] = v.Name
+		m[uint8(v.id)] = v.name
 	}
 
 	return m
 }
 
-func filterCategories(catIDs []string) ([]Category, error) {
+func filterCategories(catIDs []string) ([]category, error) {
 	if len(catIDs) == 0 {
 		return nil, nil
 	}
-	cats := make([]Category, len(catIDs))
+	cats := make([]category, len(catIDs))
 	for _, id := range catIDs {
 		id, err := strconv.ParseUint(id, 10, 8)
 		if err != nil {
@@ -314,7 +314,7 @@ func filterCategories(catIDs []string) ([]Category, error) {
 		}
 		catID := uint8(id)
 		for _, c := range categories {
-			if catID == c.ID {
+			if catID == uint8(c.id) {
 				cats = append(cats, c)
 				break
 			}

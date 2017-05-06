@@ -16,21 +16,21 @@ type Product struct {
 	Link string `json:"link"`
 }
 
-type Category struct {
-	ID            uint8      `json:"id"`
-	Name          string     `json:"name"`
-	Link          string     `json:"link"`
-	SubCategories []Category `json:"subcategories"`
+type category struct {
+	id   uint64
+	name string
+	slug string
+	subs []category
 }
 
 type options struct {
-	categories []Category
+	categories []category
 	minPrice   float64
 	maxPrice   float64
-	minBSR     int
-	maxBSR     int
-	minReviews int
-	maxReviews int
+	minBSR     uint32
+	maxBSR     uint32
+	minReviews uint32
+	maxReviews uint32
 	maxVolume  float64
 	maxWeight  float64
 }
@@ -47,22 +47,22 @@ func (crw *Crawler) MapOptions(r *http.Request) error {
 		return err
 	}
 
-	minBSR, err := strconv.Atoi(r.FormValue("min-bsr"))
+	minBSR, err := strconv.ParseUint(r.FormValue("min-bsr"), 10, 32)
 	if err != nil {
 		return err
 	}
 
-	maxBSR, err := strconv.Atoi(r.FormValue("max-bsr"))
+	maxBSR, err := strconv.ParseUint(r.FormValue("max-bsr"), 10, 32)
 	if err != nil {
 		return err
 	}
 
-	minReviews, err := strconv.Atoi(r.FormValue("min-reviews"))
+	minReviews, err := strconv.ParseUint(r.FormValue("min-reviews"), 10, 32)
 	if err != nil {
 		return err
 	}
 
-	maxReviews, err := strconv.Atoi(r.FormValue("max-reviews"))
+	maxReviews, err := strconv.ParseUint(r.FormValue("max-reviews"), 10, 32)
 	if err != nil {
 		return err
 	}
@@ -99,10 +99,10 @@ func (crw *Crawler) MapOptions(r *http.Request) error {
 
 	crw.opts.minPrice = minPrice
 	crw.opts.maxPrice = maxPrice
-	crw.opts.minBSR = minBSR
-	crw.opts.maxBSR = maxBSR
-	crw.opts.minReviews = minReviews
-	crw.opts.maxReviews = maxReviews
+	crw.opts.minBSR = uint32(minBSR)
+	crw.opts.maxBSR = uint32(maxBSR)
+	crw.opts.minReviews = uint32(minReviews)
+	crw.opts.maxReviews = uint32(maxReviews)
 	crw.opts.maxVolume = maxVolume
 	crw.opts.maxWeight = maxWeight
 
