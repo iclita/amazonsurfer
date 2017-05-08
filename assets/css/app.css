@@ -58,3 +58,7 @@ p {
     border-top: 2px solid #087994;
     outline-offset: none;
 }
+
+.error {
+    border: 2px solid red;
+}
