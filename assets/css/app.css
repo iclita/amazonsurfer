@@ -12,8 +12,8 @@ p {
 }
 
 .navbar-sky {
-    background-color: #29b6d8 !important;
-    border-color: #29b6d8 !important;
+    background-color: #025aa5 !important;
+    border-color: #025aa5 !important;
     margin-bottom: 0px !important;
 }
 
@@ -39,26 +39,57 @@ p {
     box-shadow: 1px 1px 5px #888888;
 }
 
-.btn-sky {
+.btn-search {
     color: #fff;
-    background-color: #0bacd3;
-    border-bottom: 2px solid #098aa9;
+    background-color: #5cb85c;
+    border-bottom: 2px solid #5cb85c;
 }
 
-.btn-sky:hover,.btn-sky.active:focus, .btn-sky:focus, .open > .dropdown-toggle.btn-sky {
+.btn-search:hover,.btn-search.active:focus, .btn-search:focus, .open > .dropdown-toggle.btn-search {
     color: #fff;
-    background-color: #29b6d8;
-    border-bottom: 2px solid #2192ad;
+    background-color: #449d44;
+    border-bottom: 2px solid #449d44;
     outline: none;
 }
 
-.btn-sky:active, .btn-sky.active {
+.btn-search:active, .btn-search.active {
     color: #fff;
-    background-color: #0a97b9;
-    border-top: 2px solid #087994;
+    background-color: #5cb85c;
+    border-top: 2px solid #5cb85c;
     outline-offset: none;
+}
+
+.btn-stop {
+    color: #fff;
+    background-color: #c9302c;
+    border-bottom: 2px solid #c9302c;
+}
+
+.btn-stop:hover,.btn-stop.active:focus, .btn-stop:focus, .open > .dropdown-toggle.btn-stop {
+    color: #fff;
+    background-color: #d9534f;
+    border-bottom: 2px solid #d9534f;
+    outline: none;
+}
+
+.btn-stop:active, .btn-stop.active {
+    color: #fff;
+    background-color: #c9302c;
+    border-top: 2px solid #c9302c;
+    outline-offset: none;
+}
+
+#stop-button {
+    display: none;
 }
 
 .error {
     border: 2px solid red;
+}
+
+.searching {
+    display: none;
+    float: right; 
+    color: white;
+    margin-top: 10px;
 }

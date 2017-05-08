@@ -11,8 +11,7 @@ import (
 
 // Crawler scrappes Amazon website for products
 type Crawler struct {
-	opts  options
-	Prods chan Product
+	opts options
 }
 
 // Product is a representation of an Amazon product
@@ -157,7 +156,7 @@ func (crw *Crawler) getLinks() []string {
 
 // Run searches for products and sends them on the channel to be received in the main goroutine
 // Now we only send some test products
-func (crw *Crawler) Run() {
+func (crw *Crawler) Run(prods chan Product) {
 	p1 := Product{
 		Name: "Cool baby",
 		Link: "https://skilldetector.com",
@@ -175,8 +174,8 @@ func (crw *Crawler) Run() {
 
 	for _, v := range p {
 		time.Sleep(time.Second)
-		crw.Prods <- v
+		prods <- v
 		time.Sleep(time.Second)
 	}
-	close(crw.Prods)
+	close(prods)
 }

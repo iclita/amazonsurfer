@@ -18,9 +18,7 @@ var tpl *template.Template
 
 // Create the web crawler. It will be shared accross all calls to the server
 // This is why is mandatory to have only one opened session
-var crw = &crawler.Crawler{
-	Prods: make(chan crawler.Product),
-}
+var crw = &crawler.Crawler{}
 
 // These are constants related to websockets buffer sizes
 const (
@@ -82,10 +80,12 @@ func process(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Fatal("Socker error:", err)
 	}
+	// This channel will receive the products from the crawler
+	prods := make(chan crawler.Product)
 
-	go crw.Run()
+	go crw.Run(prods)
 
-	for p := range crw.Prods {
+	for p := range prods {
 		if err := conn.WriteJSON(p); err != nil {
 			log.Println(err)
 		}

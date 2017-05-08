@@ -40,6 +40,7 @@
                 </button>
                 <a class="navbar-brand" href="/">Amazon Surfer &mdash; Find the perfect products with just a few clicks</a>
             </div>
+			<div class="searching"><i class="fa fa-spinner fa-pulse fa-2x fa-fw"></i></div>
         </div>
     </nav>
 
@@ -129,8 +130,12 @@
 
 					<br/><br/>
 
-					<button type="button" class="btn btn-sky btn-lg" id="search-button">
+					<button type="button" class="btn btn-search btn-lg" id="search-button">
 						<i class="fa fa-search" aria-hidden="true"></i> Search Now
+					</button>
+
+					<button type="button" class="btn btn-stop btn-lg" id="stop-button">
+						<i class="fa fa-ban" aria-hidden="true"></i> Stop
 					</button>
 
                 </form>
@@ -158,8 +163,14 @@
     <script src="/assets/js/app.js"></script>
 
 	<script>
-	$("#search-button").click(function(e) {
-		e.preventDefault();
+	var socket = null;
+
+	window.onbeforeunload = function() {
+		console.log("Restarting application");
+        socket.close();
+    };
+
+	$("#search-button").click(function() {
 		// Validate form input
 		var isValid = true;
 
@@ -241,7 +252,12 @@
 		}
 		// If the input is valid send the search request
 		if (isValid) {
+			$('#search-button').hide();
+			$('.searching').show();
+			$('#stop-button').show();
+			
 			var form = $("#search-form").serializeArray();
+
 			$.ajax({
 				type: "POST",
 				url: "search",
@@ -249,9 +265,12 @@
 				success: function(data) {
 					if (data === "ok") {
 						$('#count-text').show();
-						var socket = new WebSocket("ws://{{.Host}}/process");
+						socket = new WebSocket("ws://{{.Host}}/process");
 						socket.onclose = function() {
-							alert("Connection has been closed.");
+							$('.searching').hide();
+							$('#stop-button').hide();
+							$('#search-button').show();
+							alert("Search has finished");
 						}
 						socket.onmessage = function(e) {
 							$('#results').show();
@@ -267,6 +286,10 @@
 				}
 			});
 		}
+	});
+
+    $('#stop-button').click(function() {
+		socket.close();
 	});
 	</script>
 
