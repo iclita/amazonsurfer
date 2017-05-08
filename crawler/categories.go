@@ -2,7 +2,10 @@ package crawler
 
 import "strconv"
 
+// Base URL for Amazon
 const base = "https://www.amazon.com"
+
+// Below we define all main categories mentioned on Amazon
 
 var appliances = category{
 	id:   1,
@@ -263,6 +266,7 @@ var videoGames = category{
 	subs: nil,
 }
 
+// categories holds all categories defined above in a collection
 var categories = [...]category{
 	appliances,
 	appsGames,
@@ -302,6 +306,8 @@ var categories = [...]category{
 	videoGames,
 }
 
+// GetCategories fetches a list of all main categories in a map
+// After we load this map in template to be rendered as a HTML select
 func GetCategories() map[uint8]string {
 	m := make(map[uint8]string)
 	for _, v := range categories {
@@ -311,6 +317,8 @@ func GetCategories() map[uint8]string {
 	return m
 }
 
+// filterCategories holds the categories that the user chose on search request
+// This way the application knows which categories to scrappe
 func filterCategories(catIDs []string) ([]category, error) {
 	if len(catIDs) == 0 {
 		return nil, nil

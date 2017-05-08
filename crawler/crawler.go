@@ -9,16 +9,21 @@ import (
 	"time"
 )
 
+// Crawler scrappes Amazon website for products
 type Crawler struct {
 	opts  options
 	Prods chan Product
 }
 
+// Product is a representation of an Amazon product
+// This contains basic properties
+// New properties might be added over time
 type Product struct {
 	Name string `json:"name"`
 	Link string `json:"link"`
 }
 
+// category represent a category/subcategory on Amazon
 type category struct {
 	id   uint64
 	name string
@@ -26,6 +31,7 @@ type category struct {
 	subs []category
 }
 
+// options holds parameters necessary to filter products
 type options struct {
 	categories []category
 	minPrice   float64
@@ -38,6 +44,8 @@ type options struct {
 	maxWeight  float64
 }
 
+// MapOptions extracts the request data and maps the input to Crawler options
+// This way the crawler knows which options to use when filtering products
 func (crw *Crawler) MapOptions(r *http.Request) error {
 
 	minPrice, err := strconv.ParseFloat(r.FormValue("min-price"), 64)
@@ -112,6 +120,8 @@ func (crw *Crawler) MapOptions(r *http.Request) error {
 	return nil
 }
 
+// getLinks fetches all the links that need to be scrapped
+// All these links belong to a certain category
 func (cat *category) getLinks() ([]string, error) {
 	links := make([]string, len(cat.subs))
 	if cat.subs == nil {
@@ -125,6 +135,9 @@ func (cat *category) getLinks() ([]string, error) {
 	return links, nil
 }
 
+// getLinks delegates work to the function getLinks mentioned above
+// The crawler must a have a list of all links waiting to be scrapped
+// Every category comes with its links and are all accumulated here
 func (crw *Crawler) getLinks() []string {
 	var length uint16
 	for _, cat := range crw.opts.categories {
