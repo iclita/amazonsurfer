@@ -3,10 +3,17 @@ package crawler
 import (
 	"errors"
 	"log"
+	"math/rand"
 	"net/http"
+	"net/url"
 	"path"
 	"strconv"
+	"sync"
 	"time"
+
+	"strings"
+
+	"github.com/PuerkitoBio/goquery"
 )
 
 // Crawler scrappes Amazon website for products
@@ -41,6 +48,17 @@ type options struct {
 	maxReviews uint32
 	maxVolume  float64
 	maxWeight  float64
+}
+
+const (
+	minSleep = 15
+	maxSleep = 30
+)
+
+var wg sync.WaitGroup
+
+var client = &http.Client{
+	Timeout: 10 * time.Second,
 }
 
 // MapOptions extracts the request data and maps the input to Crawler options
@@ -126,10 +144,16 @@ func (cat *category) getLinks() ([]string, error) {
 	if cat.subs == nil {
 		return nil, errors.New("No subcategories found")
 	}
-	for _, sub := range cat.subs {
+	for i, sub := range cat.subs {
 		sid := strconv.Itoa(int(sub.id))
 		link := path.Join(base, sub.slug, "zgbs", cat.slug, sid)
-		links = append(links, link)
+		u, err := url.Parse(link)
+		if err != nil {
+			log.Fatal(err)
+		}
+		u.Scheme = "https"
+		link = u.String()
+		links[i] = link
 	}
 	return links, nil
 }
@@ -149,33 +173,117 @@ func (crw *Crawler) getLinks() []string {
 			log.Println(err)
 			continue
 		}
-		links = append(links, clinks...)
+		for i, cl := range clinks {
+			links[i] = cl
+		}
 	}
 	return links
 }
 
+// sleep simply puts the program to sleep for a random number of seconds
+// between min and max
+func sleep(min int, max int) {
+	delay := min + rand.Intn(max-min)
+	time.Sleep(time.Duration(delay) * time.Second)
+}
+
+// formatLink removes unncessary data from link
+// This is done to make sure unique links are retained
+// and we do not have duplicate urls
+func formatLink(link string) string {
+	s := strings.Split(link, "/")
+	// Remove first part which is "" and last part with ref=
+	s = s[1 : len(s)-1]
+	link = strings.Join(s, "/")
+	u, err := url.Parse(link)
+	if err != nil {
+		log.Fatal(err)
+	}
+	u.Scheme = "https"
+	u.Host = base
+	return u.String()
+}
+
+// scrape extracts all product links from a certain category
+// When it finds suitable products it sends them through the prods channel
+// and the main goroutine sends them in the frontend
+func (crw *Crawler) scrape(link string, prods chan<- Product) {
+	defer wg.Done()
+
+	page := 1
+
+	for {
+		pg := strconv.Itoa(page)
+		q := url.Values{}
+		q.Set("_encoding", "UTF8")
+		q.Set("pg", pg)
+		q.Set("ajax", "1")
+		plink := link + "?" + q.Encode()
+
+		req, err := http.NewRequest(http.MethodGet, plink, nil)
+
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		res, err := client.Do(req)
+		if err != nil {
+			log.Println(err)
+		}
+
+		// Exit this goroutine when there are no more pages to scrape
+		if res.StatusCode == http.StatusNotFound {
+			return
+		}
+
+		doc, err := goquery.NewDocumentFromReader(res.Body)
+		if err != nil {
+			log.Println(err)
+		}
+		res.Body.Close()
+		prodLinks := make(map[string]bool)
+		var products []Product
+		// Find the product links
+		doc.Find("div.zg_itemWrapper > div").Each(func(i int, s *goquery.Selection) {
+			// For each item found, get the url and name
+			url, ok := s.Find("a").Attr("href")
+			if !ok {
+				log.Println(err)
+			}
+			url = formatLink(url)
+			name := s.Find("a").Text()
+			if !prodLinks[url] {
+				prodLinks[url] = true
+				p := Product{
+					name,
+					url,
+				}
+				products = append(products, p)
+			}
+		})
+
+		for _, p := range products {
+			prods <- p
+		}
+
+		page++
+		sleep(minSleep, maxSleep)
+	}
+
+}
+
 // Run searches for products and sends them on the channel to be received in the main goroutine
-// Now we only send some test products
+// It sends valid products in the frontend through the websocket connection
 func (crw *Crawler) Run(prods chan Product) {
-	p1 := Product{
-		Name: "Cool baby",
-		Link: "https://skilldetector.com",
-	}
-	p2 := Product{
-		Name: "Smart Ass",
-		Link: "https://www.facebook.com",
-	}
-	p3 := Product{
-		Name: "Top Gun",
-		Link: "https://www.golang.org",
+	rand.Seed(time.Now().UTC().UnixNano())
+	links := crw.getLinks()
+	wg.Add(len(links))
+
+	for _, link := range links {
+		go crw.scrape(link, prods)
+		sleep(minSleep, maxSleep)
 	}
 
-	p := []Product{p1, p2, p3}
-
-	for _, v := range p {
-		time.Sleep(time.Second)
-		prods <- v
-		time.Sleep(time.Second)
-	}
+	wg.Wait()
 	close(prods)
 }

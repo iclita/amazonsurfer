@@ -288,7 +288,10 @@
 		}
 	});
 
-    $('#stop-button').click(function() {
+	$('#stop-button').click(function() {
+		$('.searching').hide();
+		$('#stop-button').hide();
+		$('#search-button').show();
 		socket.close();
 	});
 	</script>

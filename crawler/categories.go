@@ -3,7 +3,7 @@ package crawler
 import "strconv"
 
 // Base URL for Amazon
-const base = "https://www.amazon.com"
+const base = "www.amazon.com"
 
 // Below we define all main categories mentioned on Amazon
 
@@ -330,9 +330,9 @@ func filterCategories(catIDs []string) ([]category, error) {
 			return nil, err
 		}
 		catID := uint8(id)
-		for _, c := range categories {
+		for i, c := range categories {
 			if catID == uint8(c.id) {
-				cats = append(cats, c)
+				cats[i] = c
 				break
 			}
 		}
