@@ -2,6 +2,14 @@ package crawler
 
 import "strconv"
 
+// category represent a category/subcategory on Amazon
+type category struct {
+	id   uint64
+	name string
+	slug string
+	subs []category
+}
+
 // Base URL for Amazon
 const base = "www.amazon.com"
 
