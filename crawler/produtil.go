@@ -9,13 +9,13 @@ import (
 )
 
 // sleep simply puts the program to sleep for a random number of seconds
-// between min and max
+// between min and max when looking for products
 func sleep(min int, max int) {
 	delay := min + rand.Intn(max-min)
 	time.Sleep(time.Duration(delay) * time.Second)
 }
 
-// formatLink removes unncessary data from link
+// formatLink removes unncessary data from product link
 // This is done to make sure unique links are retained
 // and we do not have duplicate urls
 func formatLink(link string) string {
