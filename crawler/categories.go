@@ -1,6 +1,12 @@
 package crawler
 
-import "strconv"
+import (
+	"errors"
+	"log"
+	"net/url"
+	"path"
+	"strconv"
+)
 
 // category represent a category/subcategory on Amazon
 type category struct {
@@ -314,15 +320,25 @@ var categories = [...]category{
 	videoGames,
 }
 
-// GetCategories fetches a list of all main categories in a map
-// After we load this map in template to be rendered as a HTML select
-func GetCategories() map[uint8]string {
-	m := make(map[uint8]string)
-	for _, v := range categories {
-		m[uint8(v.id)] = v.name
+// getLinks fetches all the links that need to be scrapped
+// All these links belong to a certain category
+func (cat *category) getLinks() ([]string, error) {
+	links := make([]string, len(cat.subs))
+	if cat.subs == nil {
+		return nil, errors.New("No subcategories found")
 	}
-
-	return m
+	for i, sub := range cat.subs {
+		sid := strconv.Itoa(int(sub.id))
+		link := path.Join(base, sub.slug, "zgbs", cat.slug, sid)
+		u, err := url.Parse(link)
+		if err != nil {
+			log.Fatal(err)
+		}
+		u.Scheme = "https"
+		link = u.String()
+		links[i] = link
+	}
+	return links, nil
 }
 
 // filterCategories holds the categories that the user chose on search request
@@ -347,4 +363,15 @@ func filterCategories(catIDs []string) ([]category, error) {
 	}
 
 	return cats, nil
+}
+
+// GetCategories fetches a list of all main categories in a map
+// After we load this map in template to be rendered as a HTML select
+func GetCategories() map[uint8]string {
+	m := make(map[uint8]string)
+	for _, v := range categories {
+		m[uint8(v.id)] = v.name
+	}
+
+	return m
 }

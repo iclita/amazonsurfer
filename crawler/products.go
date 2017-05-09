@@ -2,17 +2,16 @@ package crawler
 
 import (
 	"log"
-	"math/rand"
 	"net/url"
 	"strings"
-	"time"
 )
 
-// sleep simply puts the program to sleep for a random number of seconds
-// between min and max when looking for products
-func sleep(min int, max int) {
-	delay := min + rand.Intn(max-min)
-	time.Sleep(time.Duration(delay) * time.Second)
+// Product is a representation of an Amazon product
+// This contains basic properties
+// New properties might be added over time
+type Product struct {
+	Name string `json:"name"`
+	Link string `json:"link"`
 }
 
 // formatLink removes unncessary data from product link

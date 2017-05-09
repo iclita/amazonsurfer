@@ -1,12 +1,10 @@
 package crawler
 
 import (
-	"errors"
 	"log"
 	"math/rand"
 	"net/http"
 	"net/url"
-	"path"
 	"strconv"
 	"sync"
 	"time"
@@ -14,17 +12,9 @@ import (
 	"github.com/PuerkitoBio/goquery"
 )
 
-// Crawler scrappes Amazon website for products
+// Crawler scrapes Amazon website for products
 type Crawler struct {
 	opts options
-}
-
-// Product is a representation of an Amazon product
-// This contains basic properties
-// New properties might be added over time
-type Product struct {
-	Name string `json:"name"`
-	Link string `json:"link"`
 }
 
 // options holds parameters necessary to filter products
@@ -47,6 +37,9 @@ const (
 
 var wg sync.WaitGroup
 
+// It is best not to use the default client which has no timeout
+// This way no request takes more then the the specified timeout
+// And the resources are not stuck
 var client = &http.Client{
 	Timeout: 10 * time.Second,
 }
@@ -125,27 +118,6 @@ func (crw *Crawler) MapOptions(r *http.Request) error {
 	crw.opts.maxWeight = maxWeight
 
 	return nil
-}
-
-// getLinks fetches all the links that need to be scrapped
-// All these links belong to a certain category
-func (cat *category) getLinks() ([]string, error) {
-	links := make([]string, len(cat.subs))
-	if cat.subs == nil {
-		return nil, errors.New("No subcategories found")
-	}
-	for i, sub := range cat.subs {
-		sid := strconv.Itoa(int(sub.id))
-		link := path.Join(base, sub.slug, "zgbs", cat.slug, sid)
-		u, err := url.Parse(link)
-		if err != nil {
-			log.Fatal(err)
-		}
-		u.Scheme = "https"
-		link = u.String()
-		links[i] = link
-	}
-	return links, nil
 }
 
 // getLinks delegates work to the function getLinks mentioned above
