@@ -9,7 +9,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"bitbucket.org/achillezz/amazonsurfer/crawler"
+	"bitbucket.org/iulianclita/amazonsurfer/crawler"
 	"github.com/gorilla/websocket"
 )
 
