@@ -14,7 +14,8 @@ import (
 
 // Crawler scrapes Amazon website for products
 type Crawler struct {
-	opts options
+	opts    options
+	Timeout time.Duration
 }
 
 // options holds parameters necessary to filter products
@@ -36,13 +37,6 @@ const (
 )
 
 var wg sync.WaitGroup
-
-// It is best not to use the default client which has no timeout
-// This way no request takes more then the the specified timeout
-// And the resources are not stuck
-var client = &http.Client{
-	Timeout: 10 * time.Second,
-}
 
 // MapOptions extracts the request data and maps the input to Crawler options
 // This way the crawler knows which options to use when filtering products
@@ -145,7 +139,7 @@ func (crw *Crawler) getLinks() []string {
 // scrape extracts all product links from a certain category
 // When it finds suitable products it sends them through the prods channel
 // and the main goroutine sends them in the frontend
-func (crw *Crawler) scrape(link string, prods chan<- Product) {
+func (crw *Crawler) scrape(link string, prods chan<- Product, client *http.Client) {
 	defer wg.Done()
 
 	page := 1
@@ -213,12 +207,20 @@ func (crw *Crawler) scrape(link string, prods chan<- Product) {
 // Run searches for products and sends them on the channel to be received in the main goroutine
 // It sends valid products in the frontend through the websocket connection
 func (crw *Crawler) Run(prods chan Product) {
+
 	rand.Seed(time.Now().UTC().UnixNano())
 	links := crw.getLinks()
 	wg.Add(len(links))
 
+	// It is best not to use the default client which has no timeout
+	// This way no request takes more then the the specified timeout
+	// And the resources are not stuck
+	httpClient := &http.Client{
+		Timeout: crw.Timeout * time.Second,
+	}
+
 	for _, link := range links {
-		go crw.scrape(link, prods)
+		go crw.scrape(link, prods, httpClient)
 		sleep(minSleep, maxSleep)
 	}
 

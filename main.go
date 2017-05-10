@@ -18,7 +18,9 @@ var tpl *template.Template
 
 // Create the web crawler. It will be shared accross all calls to the server
 // This is why is mandatory to have only one opened session
-var crw = &crawler.Crawler{}
+var crw = &crawler.Crawler{
+	Timeout: 10,
+}
 
 // These are constants related to websockets buffer sizes
 const (
