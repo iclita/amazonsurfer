@@ -170,7 +170,7 @@ func (crw *Crawler) scrape(link string, prods chan<- Product) {
 		}
 
 		// Exit this goroutine when there are no more pages to scrape
-		if res.StatusCode == http.StatusNotFound {
+		if res.StatusCode != http.StatusOK {
 			return
 		}
 
