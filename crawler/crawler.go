@@ -16,9 +16,9 @@ import (
 // Crawler scrapes Amazon website for products
 type Crawler struct {
 	opts    options
+	done    chan struct{}
 	Conn    *websocket.Conn
 	Timeout time.Duration
-	Done    chan struct{}
 }
 
 // options holds parameters necessary to filter products
@@ -205,7 +205,7 @@ func (crw *Crawler) scrape(link string, prods chan<- Product, client *http.Clien
 		// Send found products in the main goroutine
 		for _, p := range products {
 			select {
-			case <-crw.Done:
+			case <-crw.done:
 				return
 			default:
 				prods <- p
@@ -222,7 +222,7 @@ func (crw *Crawler) scrape(link string, prods chan<- Product, client *http.Clien
 // It sends valid products in the frontend through the websocket connection
 func (crw *Crawler) Run(prods chan Product) {
 	// Reset Done channel to initial state so that calls to this channel block again
-	crw.Done = nil
+	crw.done = nil
 	// Seed the random source to get truly random numbers
 	rand.Seed(time.Now().UTC().UnixNano())
 	// Get all the links that need to be scraped
@@ -250,7 +250,7 @@ func (crw *Crawler) Run(prods chan Product) {
 // It then closes the current websockets connection
 func (crw *Crawler) Stop() {
 	// Make a new Done channel and close it to signal child goroutines to stop
-	crw.Done = make(chan struct{})
-	close(crw.Done)
+	crw.done = make(chan struct{})
+	close(crw.done)
 	crw.Conn.Close()
 }
