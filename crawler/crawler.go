@@ -27,7 +27,9 @@ type options struct {
 	maxBSR     uint32
 	minReviews uint32
 	maxReviews uint32
-	maxVolume  float64
+	maxLength  float64
+	maxWidth   float64
+	maxHeight  float64
 	maxWeight  float64
 }
 
@@ -72,22 +74,20 @@ func (crw *Crawler) MapOptions(r *http.Request) error {
 		return err
 	}
 
-	length, err := strconv.ParseFloat(r.FormValue("length"), 64)
+	maxLength, err := strconv.ParseFloat(r.FormValue("max-length"), 64)
 	if err != nil {
 		return err
 	}
 
-	width, err := strconv.ParseFloat(r.FormValue("width"), 64)
+	maxWidth, err := strconv.ParseFloat(r.FormValue("max-width"), 64)
 	if err != nil {
 		return err
 	}
 
-	height, err := strconv.ParseFloat(r.FormValue("height"), 64)
+	maxHeight, err := strconv.ParseFloat(r.FormValue("max-height"), 64)
 	if err != nil {
 		return err
 	}
-
-	maxVolume := length * width * height
 
 	maxWeight, err := strconv.ParseFloat(r.FormValue("max-weight"), 64)
 	if err != nil {
@@ -95,20 +95,20 @@ func (crw *Crawler) MapOptions(r *http.Request) error {
 	}
 
 	cats, err := filterCategories(r.Form["categories"])
-
 	if err != nil {
 		return err
 	}
 
 	crw.opts.categories = cats
-
 	crw.opts.minPrice = minPrice
 	crw.opts.maxPrice = maxPrice
 	crw.opts.minBSR = uint32(minBSR)
 	crw.opts.maxBSR = uint32(maxBSR)
 	crw.opts.minReviews = uint32(minReviews)
 	crw.opts.maxReviews = uint32(maxReviews)
-	crw.opts.maxVolume = maxVolume
+	crw.opts.maxLength = maxLength
+	crw.opts.maxWidth = maxWidth
+	crw.opts.maxHeight = maxHeight
 	crw.opts.maxWeight = maxWeight
 
 	return nil

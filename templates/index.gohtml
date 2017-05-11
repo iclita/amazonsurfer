@@ -106,15 +106,15 @@
 						<p>Maximum Size (inches)</p>
 						<div class="input-group">
 							<div class="input-group-addon">Length</div>
-							<input type="number" name="length" id="length" class="form-control" placeholder="Enter max length" value="15" required="required" />
+							<input type="number" name="max-length" id="max-length" class="form-control" placeholder="Enter max length" value="15" required="required" />
 						</div>
 						<div class="input-group">
 							<div class="input-group-addon">Width</div>
-							<input type="number" name="width" id="width" class="form-control" placeholder="Enter max width" value="12" required="required" />
+							<input type="number" name="max-width" id="max-width" class="form-control" placeholder="Enter max width" value="12" required="required" />
 						</div>
 						<div class="input-group">
 							<div class="input-group-addon">Height</div>
-							<input type="number" name="height" id="height" class="form-control" placeholder="Enter max height" value="0.75" required="required" />
+							<input type="number" name="max-height" id="max-height" class="form-control" placeholder="Enter max height" value="0.75" required="required" />
 						</div>
 					</div>
 
@@ -223,25 +223,25 @@
 			$('#max-reviews').removeClass('error');
 		}
 
-		if ($('#length').val() === '') {
+		if ($('#max-length').val() === '') {
 			isValid = false;
-			$('#length').addClass('error');
+			$('#max-length').addClass('error');
 		} else {
-			$('#length').removeClass('error');
+			$('#max-length').removeClass('error');
 		}
 
-		if ($('#width').val() === '') {
+		if ($('#max-width').val() === '') {
 			isValid = false;
-			$('#width').addClass('error');
+			$('#max-width').addClass('error');
 		} else {
-			$('#width').removeClass('error');
+			$('#max-width').removeClass('error');
 		}
 
-		if ($('#height').val() === '') {
+		if ($('#max-height').val() === '') {
 			isValid = false;
-			$('#height').addClass('error');
+			$('#max-height').addClass('error');
 		} else {
-			$('#height').removeClass('error');
+			$('#max-height').removeClass('error');
 		}
 
 		if ($('#max-weight').val() === '') {
