@@ -33,11 +33,14 @@ type options struct {
 	maxWeight  float64
 }
 
+// The min and max limits to sleep between requests
+// The crawler will choose a random number of seconds to sleep
 const (
 	minSleep = 15
 	maxSleep = 30
 )
 
+// wg waits for all goroutines to finish
 var wg sync.WaitGroup
 
 // MapOptions extracts the request data and maps the input to Crawler options
@@ -98,7 +101,7 @@ func (crw *Crawler) MapOptions(r *http.Request) error {
 	if err != nil {
 		return err
 	}
-
+	// We save these options on the crawler
 	crw.opts.categories = cats
 	crw.opts.minPrice = minPrice
 	crw.opts.maxPrice = maxPrice
@@ -118,11 +121,14 @@ func (crw *Crawler) MapOptions(r *http.Request) error {
 // The crawler must a have a list of all links waiting to be scrapped
 // Every category comes with its links and are all accumulated here
 func (crw *Crawler) getLinks() []string {
+	// Calculate the total length of the links slice
+	// This way it is very efficient because we make 1 allocation only
 	var length uint16
 	for _, cat := range crw.opts.categories {
 		length += uint16(len(cat.subs))
 	}
 	links := make([]string, length)
+	// We extract all links from every category and merge them in the final slice
 	for _, cat := range crw.opts.categories {
 		clinks, err := cat.getLinks()
 		if err != nil {
@@ -141,10 +147,11 @@ func (crw *Crawler) getLinks() []string {
 // and the main goroutine sends them in the frontend
 func (crw *Crawler) scrape(link string, prods chan<- Product, client *http.Client) {
 	defer wg.Done()
-
+	// Start from first page
 	page := 1
 
 	for {
+		// Compute the link to be scraped for products
 		pg := strconv.Itoa(page)
 		q := url.Values{}
 		q.Set("_encoding", "UTF8")
@@ -157,17 +164,16 @@ func (crw *Crawler) scrape(link string, prods chan<- Product, client *http.Clien
 		if err != nil {
 			log.Fatal(err)
 		}
-
+		// Send the request
 		res, err := client.Do(req)
 		if err != nil {
 			log.Println(err)
 		}
-
 		// Exit this goroutine when there are no more pages to scrape
 		if res.StatusCode != http.StatusOK {
 			return
 		}
-
+		// Parse the DOM
 		doc, err := goquery.NewDocumentFromReader(res.Body)
 		if err != nil {
 			log.Println(err)
@@ -193,12 +199,13 @@ func (crw *Crawler) scrape(link string, prods chan<- Product, client *http.Clien
 				products = append(products, p)
 			}
 		})
-
+		// Send found products in the main goroutine
 		for _, p := range products {
 			prods <- p
 		}
-
+		// Go to next page
 		page++
+		// Sleep between requests
 		sleep(minSleep, maxSleep)
 	}
 
@@ -207,9 +214,11 @@ func (crw *Crawler) scrape(link string, prods chan<- Product, client *http.Clien
 // Run searches for products and sends them on the channel to be received in the main goroutine
 // It sends valid products in the frontend through the websocket connection
 func (crw *Crawler) Run(prods chan Product) {
-
+	// Seed the random source to get truly random numbers
 	rand.Seed(time.Now().UTC().UnixNano())
+	// Get all the links that need to be scraped
 	links := crw.getLinks()
+	// Add all goroutines to the wait group
 	wg.Add(len(links))
 
 	// It is best not to use the default client which has no timeout
@@ -218,12 +227,13 @@ func (crw *Crawler) Run(prods chan Product) {
 	httpClient := &http.Client{
 		Timeout: crw.Timeout * time.Second,
 	}
-
+	// Scrape every subcateogry in its own goroutine
 	for _, link := range links {
 		go crw.scrape(link, prods, httpClient)
 		sleep(minSleep, maxSleep)
 	}
-
+	// Wait for all goroutines to finish
 	wg.Wait()
+	// We're done. Close the channel
 	close(prods)
 }

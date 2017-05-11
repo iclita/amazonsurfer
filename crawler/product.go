@@ -21,6 +21,7 @@ func formatLink(link string) string {
 	s := strings.Split(link, "/")
 	// Remove first part which is "" and last part with ref=
 	s = s[1 : len(s)-1]
+	// Rebuild the link
 	link = strings.Join(s, "/")
 	u, err := url.Parse(link)
 	if err != nil {

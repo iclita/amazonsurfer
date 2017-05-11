@@ -20,7 +20,6 @@ type category struct {
 const base = "www.amazon.com"
 
 // Below we define all main categories mentioned on Amazon
-
 var appliances = category{
 	id:   1,
 	name: "Appliances",
@@ -324,9 +323,11 @@ var categories = [...]category{
 // All these links belong to a certain category
 func (cat *category) getLinks() ([]string, error) {
 	links := make([]string, len(cat.subs))
+	// Every category must have at least 1 subcateogry
 	if cat.subs == nil {
 		return nil, errors.New("No subcategories found")
 	}
+	// Get links for all subcategories belonging to this category
 	for i, sub := range cat.subs {
 		sid := strconv.Itoa(int(sub.id))
 		link := path.Join(base, sub.slug, "zgbs", cat.slug, sid)
