@@ -55,7 +55,7 @@ func index(w http.ResponseWriter, r *http.Request) {
 	tpl.Execute(w, data)
 }
 
-// Search attaches useful data from the request to the existing web crawler
+// search attaches useful data from the request to the existing web crawler
 // The crawler stores that data into its options property
 func search(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "POST" {
@@ -83,6 +83,8 @@ func process(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Fatal("Socker error:", err)
 	}
+	// Hold a reference to the current connection
+	crw.Conn = conn
 	// This channel will receive the products from the crawler
 	prods := make(chan crawler.Product)
 
@@ -95,6 +97,14 @@ func process(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// stop closses the current websockets connection
+func stop(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		log.Fatal("Method should be POST")
+	}
+	crw.Stop()
+}
+
 // Main function starts the program
 // We can use a custom port if the default one is already taken
 // The default port is 1234 so in order to access out server we must visit http://localhost:1234
@@ -105,6 +115,7 @@ func main() {
 	http.HandleFunc("/favicon.ico", favicon)
 	http.HandleFunc("/search", search)
 	http.HandleFunc("/process", process)
+	http.HandleFunc("/stop", stop)
 	http.HandleFunc("/", index)
 	log.Printf("Listening on port %s\n", *port)
 	addr := ":" + *port

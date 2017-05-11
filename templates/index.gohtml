@@ -171,6 +171,10 @@
     };
 
 	$("#search-button").click(function() {
+		// Reset table layout
+		$('#count').html(0)
+		$('#results').hide();
+		$('#results tbody tr').remove();
 		// Validate form input
 		var isValid = true;
 
@@ -264,13 +268,14 @@
 				data: form,
 				success: function(data) {
 					if (data === "ok") {
+						console.log("Search started");
 						$('#count-text').show();
 						socket = new WebSocket("ws://{{.Host}}/process");
 						socket.onclose = function() {
 							$('.searching').hide();
 							$('#stop-button').hide();
 							$('#search-button').show();
-							alert("Search has finished");
+							alert("Search finished");
 						}
 						socket.onmessage = function(e) {
 							$('#results').show();
@@ -289,10 +294,17 @@
 	});
 
 	$('#stop-button').click(function() {
-		$('.searching').hide();
-		$('#stop-button').hide();
-		$('#search-button').show();
 		socket.close();
+		$.ajax({
+			type: "POST",
+			url: "stop",
+			success: function() {
+				console.log("Connection closed");
+				$('.searching').hide();
+				$('#stop-button').hide();
+				$('#search-button').show();
+			}
+		});
 	});
 	</script>
 

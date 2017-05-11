@@ -10,11 +10,15 @@ import (
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
+	"github.com/gorilla/websocket"
 )
 
 // Crawler scrapes Amazon website for products
 type Crawler struct {
+	waiting int
 	opts    options
+	Done    chan struct{}
+	Conn    *websocket.Conn
 	Timeout time.Duration
 }
 
@@ -127,6 +131,8 @@ func (crw *Crawler) getLinks() []string {
 	for _, cat := range crw.opts.categories {
 		length += uint16(len(cat.subs))
 	}
+	// Set the number of waiting goroutines that are have yet finished processing
+	crw.waiting = int(length)
 	links := make([]string, length)
 	// We extract all links from every category and merge them in the final slice
 	for _, cat := range crw.opts.categories {
@@ -146,10 +152,14 @@ func (crw *Crawler) getLinks() []string {
 // When it finds suitable products it sends them through the prods channel
 // and the main goroutine sends them in the frontend
 func (crw *Crawler) scrape(link string, prods chan<- Product, client *http.Client) {
-	defer wg.Done()
+	defer func() {
+		wg.Done()
+		// This goroutine has finished so decrement the waiting list
+		crw.waiting--
+	}()
 	// Start from first page
 	page := 1
-
+	// Loop through all subcategory pages
 	for {
 		// Compute the link to be scraped for products
 		pg := strconv.Itoa(page)
@@ -201,14 +211,18 @@ func (crw *Crawler) scrape(link string, prods chan<- Product, client *http.Clien
 		})
 		// Send found products in the main goroutine
 		for _, p := range products {
-			prods <- p
+			select {
+			case <-crw.Done:
+				return
+			default:
+				prods <- p
+			}
 		}
 		// Go to next page
 		page++
 		// Sleep between requests
 		sleep(minSleep, maxSleep)
 	}
-
 }
 
 // Run searches for products and sends them on the channel to be received in the main goroutine
@@ -220,7 +234,6 @@ func (crw *Crawler) Run(prods chan Product) {
 	links := crw.getLinks()
 	// Add all goroutines to the wait group
 	wg.Add(len(links))
-
 	// It is best not to use the default client which has no timeout
 	// This way no request takes more then the the specified timeout
 	// And the resources are not stuck
@@ -236,4 +249,14 @@ func (crw *Crawler) Run(prods chan Product) {
 	wg.Wait()
 	// We're done. Close the channel
 	close(prods)
+}
+
+// Stop signals all other goroutines to exit
+// It then closes the current websockets connection
+func (crw *Crawler) Stop() {
+	crw.Done = make(chan struct{}, crw.waiting)
+	for i := 0; i < crw.waiting; i++ {
+		crw.Done <- struct{}{}
+	}
+	crw.Conn.Close()
 }

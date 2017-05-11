@@ -31,6 +31,12 @@ var appliances = category{
 			"Best-Sellers-Appliances-Cooktops",
 			nil,
 		},
+		category{
+			3741281,
+			"Built-In Dishwashers",
+			"Best-Sellers-Appliances-Built-Dishwashers",
+			nil,
+		},
 	},
 }
 
