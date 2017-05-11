@@ -15,11 +15,10 @@ import (
 
 // Crawler scrapes Amazon website for products
 type Crawler struct {
-	waiting int
 	opts    options
-	Done    chan struct{}
 	Conn    *websocket.Conn
 	Timeout time.Duration
+	Done    chan struct{}
 }
 
 // options holds parameters necessary to filter products
@@ -131,8 +130,6 @@ func (crw *Crawler) getLinks() []string {
 	for _, cat := range crw.opts.categories {
 		length += uint16(len(cat.subs))
 	}
-	// Set the number of waiting goroutines that are have yet finished processing
-	crw.waiting = int(length)
 	links := make([]string, length)
 	// We extract all links from every category and merge them in the final slice
 	for _, cat := range crw.opts.categories {
@@ -152,11 +149,7 @@ func (crw *Crawler) getLinks() []string {
 // When it finds suitable products it sends them through the prods channel
 // and the main goroutine sends them in the frontend
 func (crw *Crawler) scrape(link string, prods chan<- Product, client *http.Client) {
-	defer func() {
-		wg.Done()
-		// This goroutine has finished so decrement the waiting list
-		crw.waiting--
-	}()
+	defer wg.Done()
 	// Start from first page
 	page := 1
 	// Loop through all subcategory pages
@@ -228,6 +221,8 @@ func (crw *Crawler) scrape(link string, prods chan<- Product, client *http.Clien
 // Run searches for products and sends them on the channel to be received in the main goroutine
 // It sends valid products in the frontend through the websocket connection
 func (crw *Crawler) Run(prods chan Product) {
+	// Reset Done channel to initial state so that calls to this channel block again
+	crw.Done = nil
 	// Seed the random source to get truly random numbers
 	rand.Seed(time.Now().UTC().UnixNano())
 	// Get all the links that need to be scraped
@@ -254,9 +249,8 @@ func (crw *Crawler) Run(prods chan Product) {
 // Stop signals all other goroutines to exit
 // It then closes the current websockets connection
 func (crw *Crawler) Stop() {
-	crw.Done = make(chan struct{}, crw.waiting)
-	for i := 0; i < crw.waiting; i++ {
-		crw.Done <- struct{}{}
-	}
+	// Make a new Done channel and close it to signal child goroutines to stop
+	crw.Done = make(chan struct{})
+	close(crw.Done)
 	crw.Conn.Close()
 }
