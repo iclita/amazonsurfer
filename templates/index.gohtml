@@ -168,6 +168,9 @@
 	window.onbeforeunload = function() {
 		console.log("Restarting application");
         socket.close();
+		// Trigger a click on close button to stop the processing on th server
+		// This is crucial
+		$('#stop-button').click();
     };
 
 	$("#search-button").click(function() {
@@ -270,7 +273,7 @@
 					if (data === "ok") {
 						console.log("Search started");
 						$('#count-text').show();
-						socket = new WebSocket("ws://{{.Host}}/process");
+						socket = new WebSocket("ws://{{.Host}}/start");
 						socket.onclose = function() {
 							$('.searching').hide();
 							$('#stop-button').hide();

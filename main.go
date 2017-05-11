@@ -77,7 +77,7 @@ func search(w http.ResponseWriter, r *http.Request) {
 // We start by upgrading our connection to websockets
 // After we launch the crawler in the background to search for products
 // We wait for products to be sent in the main goroutine and flush them in the frontend
-func process(w http.ResponseWriter, r *http.Request) {
+func start(w http.ResponseWriter, r *http.Request) {
 	conn, err := upgrader.Upgrade(w, r, nil)
 	defer conn.Close()
 	if err != nil {
@@ -87,7 +87,7 @@ func process(w http.ResponseWriter, r *http.Request) {
 	crw.Conn = conn
 	// This channel will receive the products from the crawler
 	prods := make(chan crawler.Product)
-
+	// Run the crawler in the background
 	go crw.Run(prods)
 
 	for p := range prods {
@@ -114,7 +114,7 @@ func main() {
 	http.Handle("/assets/", http.StripPrefix("/assets/", http.FileServer(http.Dir("./assets"))))
 	http.HandleFunc("/favicon.ico", favicon)
 	http.HandleFunc("/search", search)
-	http.HandleFunc("/process", process)
+	http.HandleFunc("/start", start)
 	http.HandleFunc("/stop", stop)
 	http.HandleFunc("/", index)
 	log.Printf("Listening on port %s\n", *port)
