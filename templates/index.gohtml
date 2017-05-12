@@ -169,26 +169,42 @@
 
 	<script>
 
-	var interval = setInterval(function() {
-		var counter = parseInt($('.starting').html());
-		if (counter === 0) {
-			clearInterval(interval);
-			$('.starting').hide();
-		} else {
-			$('.starting').html(counter - 1);
-		}
-	}, 1000);
-
 	function relax() {
 		$('#search-button').hide();
-		$('#start-button').show();		
+		$('#stop-button').hide();
+		$('.searching').hide();
+		$('#start-button').show();
+		$('.starting').html({{.Relax}});
+		// Reset table layout
+		$('#count-text').hide();
+		$('#count').html(0);
+		$('#results').hide();
+		$('#results tbody tr').remove();
+		$('.starting').show();
+
+		var interval = setInterval(function() {
+			var counter = parseInt($('.starting').html());
+			if (counter === 0) {
+				clearInterval(interval);
+				$('.starting').hide();
+				$('#start-button').hide();
+				if (! $('#stop-button').is(':visible')) {
+					$('#search-button').show();
+				}
+			} else {
+				$('.starting').html(counter - 1);
+			}
+		}, 1000);
+
 		setTimeout(function() {
-			$('#start-button').hide();	
-			$('#search-button').show();
+			$('#start-button').hide();
+			if (! $('#stop-button').is(':visible')) {
+				$('#search-button').show();
+			}	
 		}, {{.Relax}} * 1000);
 	}
 
-	relax()
+	relax();
 
 	var socket = null;
 
@@ -201,10 +217,7 @@
     };
 
 	$("#search-button").click(function() {
-		// Reset table layout
-		$('#count').html(0)
-		$('#results').hide();
-		$('#results tbody tr').remove();
+		$('#count-text').show();
 		// Validate form input
 		var isValid = true;
 
@@ -300,13 +313,9 @@
 					if (data === "ok") {
 						console.log("Search started");
 						$('#count-text').show();
+
 						socket = new WebSocket("ws://{{.Host}}/start");
-						socket.onclose = function() {
-							$('.searching').hide();
-							$('#stop-button').hide();
-							$('#search-button').show();
-							alert("Search finished");
-						}
+
 						socket.onmessage = function(e) {
 							$('#results').show();
 							var res = JSON.parse(e.data);
@@ -314,6 +323,11 @@
 							$('#results tbody').append(row);
 							var count = parseInt($('#count').html()) + 1;
 							$('#count').html(count);
+						}
+
+						socket.onclose = function() {
+							relax();
+							alert("Search finished");
 						}
 					} else {
 						alert(data);
@@ -330,9 +344,6 @@
 			url: "stop",
 			success: function() {
 				console.log("Connection closed");
-				$('.searching').hide();
-				$('#stop-button').hide();
-				$('#search-button').show();
 				relax();
 			}
 		});
