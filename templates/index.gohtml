@@ -170,12 +170,12 @@
 	<script>
 
 	var interval = setInterval(function() {
-		var remaining = parseInt($('.recovering').html());
-		if (remaining === 0) {
+		var counter = parseInt($('.recovering').html());
+		if (counter === 0) {
 			clearInterval(interval);
 			$('.recovering').hide();
 		} else {
-			$('.recovering').html(remaining - 1);
+			$('.recovering').html(counter - 1);
 		}
 	}, 1000);
 
