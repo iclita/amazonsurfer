@@ -53,9 +53,9 @@
 
 					<div class="row">
 						<select id="categories" name="categories" multiple="multiple" required="required" />
-							{{ range $key, $value := .Categories }}
+							{{range $key, $value := .Categories}}
 							<option value="{{ $key }}">{{$value}}</option>
-							{{ end }}
+							{{end}}
 						</select>
 					</div>
 
