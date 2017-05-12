@@ -41,7 +41,7 @@
                 <a class="navbar-brand" href="/">Amazon Surfer &mdash; Find the perfect products with just a few clicks</a>
             </div>
 			<div class="searching"><i class="fa fa-spinner fa-pulse fa-2x fa-fw"></i></div>
-			<div class="recovering">{{.Relax}}</div>
+			<div class="starting">{{.Relax}}</div>
         </div>
     </nav>
 
@@ -135,8 +135,8 @@
 						<i class="fa fa-search" aria-hidden="true"></i> Search Now
 					</button>
 
-					<button type="button" class="btn btn-recover btn-lg" id="recover-button" disabled="disabled">
-						<i class="fa fa-cog fa-spin fa-fw"></i> Recovering...
+					<button type="button" class="btn btn-start btn-lg" id="start-button" disabled="disabled">
+						<i class="fa fa-cog fa-spin fa-fw"></i> Starting...
 					</button>
 
 					<button type="button" class="btn btn-stop btn-lg" id="stop-button">
@@ -170,20 +170,20 @@
 	<script>
 
 	var interval = setInterval(function() {
-		var counter = parseInt($('.recovering').html());
+		var counter = parseInt($('.starting').html());
 		if (counter === 0) {
 			clearInterval(interval);
-			$('.recovering').hide();
+			$('.starting').hide();
 		} else {
-			$('.recovering').html(counter - 1);
+			$('.starting').html(counter - 1);
 		}
 	}, 1000);
 
 	function relax() {
 		$('#search-button').hide();
-		$('#recover-button').show();		
+		$('#start-button').show();		
 		setTimeout(function() {
-			$('#recover-button').hide();	
+			$('#start-button').hide();	
 			$('#search-button').show();
 		}, {{.Relax}} * 1000);
 	}

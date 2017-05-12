@@ -79,20 +79,20 @@ p {
     outline-offset: none;
 }
 
-.btn-recover {
+.btn-start {
     color: #fff;
     background-color: #ec971f;
     border-bottom: 2px solid #ec971f;
 }
 
-.btn-recover:hover,.btn-recover.active:focus, .btn-recover:focus, .open > .dropdown-toggle.btn-recover {
+.btn-start:hover,.btn-start.active:focus, .btn-start:focus, .open > .dropdown-toggle.btn-start {
     color: #fff;
     background-color: #ec971f;
     border-bottom: 2px solid #ec971f;
     outline: none;
 }
 
-.btn-recover:active, .btn-recover.active {
+.btn-start:active, .btn-start.active {
     color: #fff;
     background-color: #ec971f;
     border-top: 2px solid #ec971f;
@@ -103,7 +103,7 @@ p {
     display: none;
 }
 
-#recover-button {
+#start-button {
     display: none;
 }
 
@@ -118,7 +118,7 @@ p {
     margin-top: 10px;
 }
 
-.recovering {
+.starting {
     font-size: 20px;
     float: right; 
     color: white;
