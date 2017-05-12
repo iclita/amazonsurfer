@@ -226,7 +226,9 @@ func (crw *Crawler) scrape(link string, prods chan<- Product, client *http.Clien
 
 // Run searches for products and sends them on the channel to be received in the main goroutine
 // It sends valid products in the frontend through the websocket connection
-func (crw *Crawler) Run(prods chan Product) {
+func (crw *Crawler) Run(conn *websocket.Conn, prods chan Product) {
+	// Hold a reference to the current connection
+	crw.Conn = conn
 	// Reset Done channel to initial state so that calls to this channel block again
 	crw.done = nil
 	// Seed the random source to get truly random numbers

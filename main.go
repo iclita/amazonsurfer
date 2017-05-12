@@ -85,13 +85,11 @@ func start(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Fatal("Socker error:", err)
 	}
-	// Hold a reference to the current connection
-	crw.Conn = conn
 	// This channel will receive the products from the crawler
 	prods := make(chan crawler.Product)
 	// Run the crawler in the background
-	go crw.Run(prods)
-
+	go crw.Run(conn, prods)
+	// Wait for incoming products
 	for p := range prods {
 		if err := conn.WriteJSON(p); err != nil {
 			log.Println(err)
