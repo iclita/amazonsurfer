@@ -39,12 +39,18 @@ type options struct {
 // The min and max limits to sleep between requests
 // The crawler will choose a random number of seconds to sleep
 const (
-	minSleep = 15
-	maxSleep = 30
+	minSleep = 10
+	maxSleep = 20
 )
 
 // wg waits for all goroutines to finish
 var wg sync.WaitGroup
+
+// GetRelax calculates a time pause between search sessions
+// During this period the search button will be deactivated
+func GetRelax() int {
+	return minSleep + maxSleep
+}
 
 // MapOptions extracts the request data and maps the input to Crawler options
 // This way the crawler knows which options to use when filtering products

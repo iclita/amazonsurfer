@@ -79,7 +79,31 @@ p {
     outline-offset: none;
 }
 
+.btn-recover {
+    color: #fff;
+    background-color: #ec971f;
+    border-bottom: 2px solid #ec971f;
+}
+
+.btn-recover:hover,.btn-recover.active:focus, .btn-recover:focus, .open > .dropdown-toggle.btn-recover {
+    color: #fff;
+    background-color: #ec971f;
+    border-bottom: 2px solid #ec971f;
+    outline: none;
+}
+
+.btn-recover:active, .btn-recover.active {
+    color: #fff;
+    background-color: #ec971f;
+    border-top: 2px solid #ec971f;
+    outline-offset: none;
+}
+
 #stop-button {
+    display: none;
+}
+
+#recover-button {
     display: none;
 }
 
@@ -89,6 +113,13 @@ p {
 
 .searching {
     display: none;
+    float: right; 
+    color: white;
+    margin-top: 10px;
+}
+
+.recovering {
+    font-size: 20px;
     float: right; 
     color: white;
     margin-top: 10px;

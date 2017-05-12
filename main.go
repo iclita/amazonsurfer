@@ -47,9 +47,11 @@ func index(w http.ResponseWriter, r *http.Request) {
 	data := struct {
 		Host       string
 		Categories map[uint8]string
+		Relax      int
 	}{
 		Host:       r.Host,
 		Categories: crawler.GetCategories(),
+		Relax:      crawler.GetRelax(),
 	}
 
 	tpl.Execute(w, data)

@@ -41,6 +41,7 @@
                 <a class="navbar-brand" href="/">Amazon Surfer &mdash; Find the perfect products with just a few clicks</a>
             </div>
 			<div class="searching"><i class="fa fa-spinner fa-pulse fa-2x fa-fw"></i></div>
+			<div class="recovering">{{.Relax}}</div>
         </div>
     </nav>
 
@@ -53,7 +54,7 @@
 					<div class="row">
 						<select id="categories" name="categories" multiple="multiple" required="required" />
 							{{ range $key, $value := .Categories }}
-							<option value="{{ $key }}">{{ $value }}</option>
+							<option value="{{ $key }}">{{$value}}</option>
 							{{ end }}
 						</select>
 					</div>
@@ -134,6 +135,10 @@
 						<i class="fa fa-search" aria-hidden="true"></i> Search Now
 					</button>
 
+					<button type="button" class="btn btn-recover btn-lg" id="recover-button" disabled="disabled">
+						<i class="fa fa-cog fa-spin fa-fw"></i> Recovering...
+					</button>
+
 					<button type="button" class="btn btn-stop btn-lg" id="stop-button">
 						<i class="fa fa-ban" aria-hidden="true"></i> Stop
 					</button>
@@ -163,6 +168,28 @@
     <script src="/assets/js/app.js"></script>
 
 	<script>
+
+	var interval = setInterval(function() {
+		var remaining = parseInt($('.recovering').html());
+		if (remaining === 0) {
+			clearInterval(interval);
+			$('.recovering').hide();
+		} else {
+			$('.recovering').html(remaining - 1);
+		}
+	}, 1000);
+
+	function relax() {
+		$('#search-button').hide();
+		$('#recover-button').show();		
+		setTimeout(function() {
+			$('#recover-button').hide();	
+			$('#search-button').show();
+		}, {{.Relax}} * 1000);
+	}
+
+	relax()
+
 	var socket = null;
 
 	window.onbeforeunload = function() {
@@ -306,6 +333,7 @@
 				$('.searching').hide();
 				$('#stop-button').hide();
 				$('#search-button').show();
+				relax();
 			}
 		});
 	});
