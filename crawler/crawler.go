@@ -258,5 +258,10 @@ func (crw *Crawler) Stop() {
 	// Make a new Done channel and close it to signal child goroutines to stop
 	crw.done = make(chan struct{})
 	close(crw.done)
-	crw.Conn.Close()
+	// Close the connection if it's still opened
+	// The connection maybe already closed by the browser
+	// So a check must be made to ensure the connection still exists
+	if crw.Conn != nil {
+		crw.Conn.Close()
+	}
 }
