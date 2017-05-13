@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -46,6 +47,7 @@ func formatLink(link string) string {
 // findName gets the product name from the parsed document
 func findName(doc *goquery.Document) string {
 	name := doc.Find("#productTitle").Text()
+	name = strings.TrimSpace(name)
 	return name
 }
 
@@ -61,11 +63,13 @@ func findPrice(doc *goquery.Document) float64 {
 	}
 	// If no price was found return price 0
 	if strPrice == "" {
+		log.Println("Error parsing price", strPrice)
 		return price
 	}
 	// If the string does not start with $ return price 0
 	// This is because all prices on Amazon start with $
 	if !strings.HasPrefix(strPrice, "$") {
+		log.Println("Error parsing price", strPrice)
 		return price
 	}
 	// Check if this a price range ($10.00 - $15.99)
@@ -107,6 +111,128 @@ func findPrice(doc *goquery.Document) float64 {
 	return price
 }
 
+// findReviews gets the product number of reviews from the parsed document
+func findReviews(doc *goquery.Document) uint {
+	var reviews uint
+	strReviews := doc.Find("#acrCustomerReviewText").Text()
+	log.Println("Reviews string is", strReviews)
+	// If reviews text does not contain 'customer review' then it is something else
+	// This also acts for 'customer reviews'
+	if !strings.Contains(strReviews, "customer review") {
+		log.Println("Error parsing reviews", strReviews)
+		return reviews
+	}
+	// If so, carry on with extracting the number of reviews
+	// We will have something like '150 customer reviews'
+	rs := strings.Split(strReviews, " ")
+	// Get the price from this text
+	strReviews = strings.TrimSpace(rs[0])
+	// Parse the price number
+	numReviews, err := strconv.ParseUint(strReviews, 10, 64)
+	if err != nil {
+		log.Println("Error parsing reviews", strReviews)
+		return reviews
+	}
+
+	return uint(numReviews)
+}
+
+// findDimensions gets the product dimensions from the parsed document
+// It searches into the HTML container for a certain pattern and returns all dimensions
+func findDimensions(container string) (float64, float64, float64) {
+	// Compute the regex to find the dimensions pattern in the container
+	re := regexp.MustCompile("[0-9]+\\.?[0-9]* x [0-9]+\\.?[0-9]* x [0-9]+\\.?[0-9]* inches")
+	// We return something like '12.3 x 14 x 23 inches'
+	strDim := re.FindString(container)
+	if strDim == "" {
+		log.Println("Error parsing dimensions", strDim)
+		return 0, 0, 0
+	}
+	ds := strings.Split(strDim, "x")
+	if len(ds) != 3 {
+		log.Println("Error parsing dimensions", strDim)
+		return 0, 0, 0
+	}
+	// Extract all 3 dimensions as strings first
+	strLength := strings.TrimSpace(ds[0])
+	strWidth := strings.TrimSpace(ds[1])
+	strHeight := strings.TrimSpace(strings.Replace(ds[2], "inches", "", -1))
+
+	numLength, err := strconv.ParseFloat(strLength, 64)
+	if err != nil {
+		log.Println("Error parsing length", strLength)
+		return 0, 0, 0
+	}
+
+	numWidth, err := strconv.ParseFloat(strWidth, 64)
+	if err != nil {
+		log.Println("Error parsing width", strWidth)
+		return 0, 0, 0
+	}
+
+	numHeight, err := strconv.ParseFloat(strHeight, 64)
+	if err != nil {
+		log.Println("Error parsing height", strHeight)
+		return 0, 0, 0
+	}
+
+	return numLength, numWidth, numHeight
+}
+
+// findWeight gets the product weight from the parsed document
+// It searches into the HTML container for a certain pattern and returns the weight
+func findWeight(container string) float64 {
+	re := regexp.MustCompile("[0-9]+\\.?[0-9]+ (ounces|pounds)")
+	// We return something like '23.45 ounces|pounds'
+	strWeight := re.FindString(container)
+
+	if strWeight == "" {
+		log.Println("Error parsing weight", strWeight)
+		return 0
+	}
+	// Split the found string
+	ws := strings.Split(strWeight, " ")
+
+	strWeight = strings.TrimSpace(ws[0])
+
+	numWeight, err := strconv.ParseFloat(strWeight, 64)
+	if err != nil {
+		log.Println("Error parsing weight", strWeight)
+		return 0
+	}
+
+	return numWeight
+}
+
+func findBSR(container string) uint {
+	re := regexp.MustCompile("#[0-9]+\\.?[0-9]* in .+ \\(")
+	// We return something like '#45 in Kitchen (See Top 100 Kitchen)'
+	strBSR := re.FindString(container)
+
+	if strBSR == "" {
+		log.Println("Error parsing BSR", strBSR)
+		return 0
+	}
+	// Split the string
+	bs := strings.Split(strBSR, " ")
+	// Extract the first element which is the BSR
+	strBSR = strings.TrimSpace(bs[0])
+	if !strings.HasPrefix(strBSR, "#") {
+		log.Println("Error parsing BSR", strBSR)
+		return 0
+	}
+	// Remove the first character which is #
+	strBSR = strBSR[1:]
+	// Parse the price number
+	numBSR, err := strconv.ParseUint(strBSR, 10, 64)
+	if err != nil {
+		log.Println("Error parsing BSR", strBSR)
+		return 0
+	}
+
+	return uint(numBSR)
+}
+
 // getProduct fetches the product found at the given link
 // It attaches all the necessary data to the product type
 func getProduct(link string, client *http.Client) (Product, error) {
@@ -134,11 +260,29 @@ func getProduct(link string, client *http.Client) (Product, error) {
 	// Find product attributes
 	name := findName(doc)
 	price := findPrice(doc)
+	reviews := findReviews(doc)
+
+	// Get the container from the HTML document
+	container := doc.Find("#dp-container").Text()
+	// Replace all , with empty space to easily find every number
+	container = strings.Replace(container, ",", "", -1)
+	// Fetch all 3 dimensions
+	length, width, height := findDimensions(container)
+	// Fetch product shipping weight
+	weight := findWeight(container)
+	// Fetch BSR
+	bsr := findBSR(container)
 
 	prod := Product{
-		Name:  name,
-		Link:  link,
-		Price: price,
+		Name:    name,
+		Link:    link,
+		Price:   price,
+		BSR:     bsr,
+		Reviews: reviews,
+		Length:  length,
+		Width:   width,
+		Height:  height,
+		Weight:  weight,
 	}
 
 	return prod, nil
