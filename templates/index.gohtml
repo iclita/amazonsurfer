@@ -175,12 +175,6 @@
 		$('.searching').hide();
 		$('#start-button').show();
 		$('.starting').html({{.Relax}});
-		// Reset table layout
-		$('#count-text').hide();
-		$('#count').html(0);
-		$('#results').hide();
-		$('#results tbody tr').remove();
-		$('.starting').show();
 
 		var interval = setInterval(function() {
 			var counter = parseInt($('.starting').html());
@@ -217,7 +211,12 @@
     };
 
 	$("#search-button").click(function() {
+		// Reset table layout
+		$('#count').html(0);
 		$('#count-text').show();
+		$('#results tbody tr').remove();
+		$('#results').hide();
+		$('.starting').hide();
 		// Validate form input
 		var isValid = true;
 
