@@ -25,12 +25,12 @@ var appliances = category{
 	name: "Appliances",
 	slug: "appliances",
 	subs: []category{
-		category{
-			3741261,
-			"Cooktops",
-			"Best-Sellers-Appliances-Cooktops",
-			nil,
-		},
+		// category{
+		// 	3741261,
+		// 	"Cooktops",
+		// 	"Best-Sellers-Appliances-Cooktops",
+		// 	nil,
+		// },
 		category{
 			3741281,
 			"Built-In Dishwashers",
@@ -349,7 +349,7 @@ func (cat *category) getLinks() ([]string, error) {
 }
 
 // filterCategories holds the categories that the user chose on search request
-// This way the application knows which categories to scrappe
+// This way the application knows which categories to scrape
 func filterCategories(catIDs []string) ([]category, error) {
 	if len(catIDs) == 0 {
 		return nil, nil

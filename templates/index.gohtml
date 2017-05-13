@@ -322,10 +322,12 @@
 							$('#results tbody').append(row);
 							var count = parseInt($('#count').html()) + 1;
 							$('#count').html(count);
+							console.log(res);
 						}
 
 						socket.onclose = function() {
 							relax();
+							$('.starting').show();
 							alert("Search finished");
 						}
 					} else {
@@ -344,6 +346,7 @@
 			success: function() {
 				console.log("Connection closed");
 				relax();
+				$('.starting').show();
 			}
 		});
 	});
