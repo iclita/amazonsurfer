@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"net/url"
 	"regexp"
 	"strconv"
 	"strings"
@@ -24,24 +23,6 @@ type Product struct {
 	Width   float64 `json:"width"`
 	Height  float64 `json:"height"`
 	Weight  float64 `json:"weight"`
-}
-
-// formatLink removes unncessary data from product link
-// This is done to make sure unique links are retained
-// and we do not have duplicate urls
-func formatLink(link string) string {
-	s := strings.Split(link, "/")
-	// Remove first part which is "" and last parts with ref= and other param
-	s = s[1 : len(s)-2]
-	// Rebuild the link
-	link = strings.Join(s, "/")
-	u, err := url.Parse(link)
-	if err != nil {
-		log.Fatal(err)
-	}
-	u.Scheme = "https"
-	u.Host = base
-	return u.String()
 }
 
 // findName gets the product name from the parsed document
