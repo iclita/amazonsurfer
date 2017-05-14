@@ -17,7 +17,7 @@ import (
 type Crawler struct {
 	opts    options
 	done    chan struct{}
-	Conn    *websocket.Conn
+	conn    *websocket.Conn
 	Timeout time.Duration
 }
 
@@ -239,7 +239,7 @@ func (crw *Crawler) scrape(link string, prods chan<- Product, client *http.Clien
 // It sends valid products in the frontend through the websocket connection
 func (crw *Crawler) Run(conn *websocket.Conn, prods chan Product) {
 	// Hold a reference to the current connection
-	crw.Conn = conn
+	crw.conn = conn
 	// Reset Done channel to initial state so that calls to this channel block again
 	crw.done = nil
 	// Seed the random source to get truly random numbers
@@ -274,7 +274,7 @@ func (crw *Crawler) Stop() {
 	// Close the connection if it's still opened
 	// The connection maybe already closed by the browser
 	// So a check must be made to ensure the connection still exists
-	if crw.Conn != nil {
-		crw.Conn.Close()
+	if crw.conn != nil {
+		crw.conn.Close()
 	}
 }
