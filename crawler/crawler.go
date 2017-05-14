@@ -34,6 +34,7 @@ type options struct {
 	maxWidth   float64
 	maxHeight  float64
 	maxWeight  float64
+	tolerance  float64
 }
 
 // The min and max limits to sleep between requests
@@ -106,6 +107,11 @@ func (crw *Crawler) MapOptions(r *http.Request) error {
 		return err
 	}
 
+	tolerance, err := strconv.ParseFloat(r.FormValue("tolerance"), 64)
+	if err != nil {
+		return err
+	}
+
 	cats, err := filterCategories(r.Form["categories"])
 	if err != nil {
 		return err
@@ -122,6 +128,7 @@ func (crw *Crawler) MapOptions(r *http.Request) error {
 	crw.opts.maxWidth = maxWidth
 	crw.opts.maxHeight = maxHeight
 	crw.opts.maxWeight = maxWeight
+	crw.opts.tolerance = tolerance
 
 	return nil
 }

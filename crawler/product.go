@@ -115,7 +115,6 @@ func findPrice(doc *goquery.Document) float64 {
 func findReviews(doc *goquery.Document) uint {
 	var reviews uint
 	strReviews := doc.Find("#acrCustomerReviewText").Text()
-	log.Println("Reviews string is", strReviews)
 	// If reviews text does not contain 'customer review' then it is something else
 	// This also acts for 'customer reviews'
 	if !strings.Contains(strReviews, "customer review") {
@@ -141,7 +140,7 @@ func findReviews(doc *goquery.Document) uint {
 // It searches into the HTML container for a certain pattern and returns all dimensions
 func findDimensions(container string) (float64, float64, float64) {
 	// Compute the regex to find the dimensions pattern in the container
-	re := regexp.MustCompile("[0-9]+\\.?[0-9]* x [0-9]+\\.?[0-9]* x [0-9]+\\.?[0-9]* inches")
+	re := regexp.MustCompile("[0-9]+\\.?[0-9]*\\s+x\\s+[0-9]+\\.?[0-9]*\\s+x\\s+[0-9]+\\.?[0-9]*\\s+inches")
 	// We return something like '12.3 x 14 x 23 inches'
 	strDim := re.FindString(container)
 	if strDim == "" {
@@ -182,9 +181,16 @@ func findDimensions(container string) (float64, float64, float64) {
 // findWeight gets the product weight from the parsed document
 // It searches into the HTML container for a certain pattern and returns the weight
 func findWeight(container string) float64 {
-	re := regexp.MustCompile("[0-9]+\\.?[0-9]+ (ounces|pounds)")
-	// We return something like '23.45 ounces|pounds'
-	strWeight := re.FindString(container)
+	var strWeight string
+	re := regexp.MustCompile("[0-9]+\\.?[0-9]*\\s+(ounces|pounds)")
+	// We return something like '[23.45 ounces|pounds, 24 ounces|pounds]'
+	// The first is the item weight and the second is the shipping weight
+	// We are interested in the shipping weight
+	sliceWeight := re.FindAllString(container, 2)
+	// Get the last item which is the shipping weight if something was found
+	if len(sliceWeight) > 0 {
+		strWeight = sliceWeight[len(sliceWeight)-1]
+	}
 
 	if strWeight == "" {
 		log.Println("Error parsing weight", strWeight)
@@ -205,7 +211,7 @@ func findWeight(container string) float64 {
 }
 
 func findBSR(container string) uint {
-	re := regexp.MustCompile("#[0-9]+\\.?[0-9]* in .+ \\(")
+	re := regexp.MustCompile("#[0-9]+\\.?[0-9]*\\s+in\\s+.+\\s+")
 	// We return something like '#45 in Kitchen (See Top 100 Kitchen)'
 	strBSR := re.FindString(container)
 
