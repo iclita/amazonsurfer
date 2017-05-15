@@ -195,37 +195,33 @@ func (crw *Crawler) scrape(link string, prods chan<- Product, client *http.Clien
 			log.Println(err)
 		}
 		defer res.Body.Close()
-		// Hold the prodcut links in a set like structure
+		// Hold the product links in a set like structure
 		// This way we make sure that no duplicate links are inserted
 		prodLinks := make(map[string]bool)
-		var products []Product
 		// Find the product links
-		doc.Find("div.zg_itemWrapper > div").Each(func(i int, s *goquery.Selection) {
-			// For each item found, get the url
-			link, ok := s.Find("a").Attr("href")
-			if !ok {
-				log.Println(err)
-			}
-			link = formatLink(link)
-			if !prodLinks[link] {
-				prodLinks[link] = true
-				p, err := getProduct(link, client)
-				// Sleep between requests
-				sleep(minSleep, maxSleep)
-				if err != nil {
-					log.Println(err)
-				} else {
-					products = append(products, p)
-				}
-			}
-		})
-		// Send found products in the main goroutine
-		for _, p := range products {
+		sel := doc.Find("div.zg_itemWrapper > div")
+		for i := range sel.Nodes {
 			select {
 			case <-crw.done:
 				return
 			default:
-				prods <- p
+				// For each item found, get the url
+				link, ok := sel.Eq(i).Find("a").Attr("href")
+				if !ok {
+					log.Println(err)
+				}
+				link = formatLink(link)
+				if !prodLinks[link] {
+					prodLinks[link] = true
+					p, err := getProduct(link, client)
+					if err != nil {
+						log.Println(err)
+					} else {
+						prods <- p
+					}
+					// Sleep between requests
+					sleep(minSleep, maxSleep)
+				}
 			}
 		}
 		// Go to the next page
