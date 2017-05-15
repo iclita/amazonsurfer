@@ -381,6 +381,13 @@
 				success: function(data) {
 					if (data === "ok") {
 						console.log("Search started");
+						// Disable stop button for a short period
+						$('#stop-button').attr('disabled', 'disabled');
+
+						setTimeout(function() {
+							$('#stop-button').removeAttr('disabled');
+						}, {{.Relax}} * 1000);
+
 						$('#count-text').show();
 
 						socket = new WebSocket("ws://{{.Host}}/start");
