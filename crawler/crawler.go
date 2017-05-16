@@ -47,12 +47,6 @@ const (
 // wg waits for all goroutines to finish
 var wg sync.WaitGroup
 
-// GetRelax calculates a time pause between search sessions
-// During this period the search button will be deactivated
-func GetRelax() int {
-	return minSleep + maxSleep
-}
-
 // MapOptions extracts the request data and maps the input to Crawler options
 // This way the crawler knows which options to use when filtering products
 func (crw *Crawler) MapOptions(r *http.Request) error {

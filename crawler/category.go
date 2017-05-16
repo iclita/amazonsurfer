@@ -25,12 +25,12 @@ var appliances = category{
 	name: "Appliances",
 	slug: "appliances",
 	subs: []category{
-		// category{
-		// 	3741261,
-		// 	"Cooktops",
-		// 	"Best-Sellers-Appliances-Cooktops",
-		// 	nil,
-		// },
+		category{
+			3741261,
+			"Cooktops",
+			"Best-Sellers-Appliances-Cooktops",
+			nil,
+		},
 		category{
 			3741281,
 			"Built-In Dishwashers",
