@@ -254,8 +254,8 @@
 			$('#max-price').removeClass('error');
 		}
 
-		var minBSR = $('#min-bsr').val() !== '' ? parseFloat($('#min-bsr').val()) : -1;
-		var maxBSR = $('#max-bsr').val() !== '' ? parseFloat($('#max-bsr').val()) : -1;
+		var minBSR = $('#min-bsr').val() !== '' ? parseInt($('#min-bsr').val()) : -1;
+		var maxBSR = $('#max-bsr').val() !== '' ? parseInt($('#max-bsr').val()) : -1;
 
 		if (minBSR < 0) {
 			isValid = false;
@@ -271,8 +271,8 @@
 			$('#max-bsr').removeClass('error');
 		}
 
-		var minReviews = $('#min-reviews').val() !== '' ? parseFloat($('#min-reviews').val()) : -1;
-		var maxReviews = $('#max-reviews').val() !== '' ? parseFloat($('#max-reviews').val()) : -1;
+		var minReviews = $('#min-reviews').val() !== '' ? parseInt($('#min-reviews').val()) : -1;
+		var maxReviews = $('#max-reviews').val() !== '' ? parseInt($('#max-reviews').val()) : -1;
 
 		if (minReviews < 0) {
 			isValid = false;
@@ -381,12 +381,6 @@
 				success: function(data) {
 					if (data === "ok") {
 						console.log("Search started");
-						// Disable stop button for a short period
-						$('#stop-button').attr('disabled', 'disabled');
-
-						setTimeout(function() {
-							$('#stop-button').removeAttr('disabled');
-						}, {{.Relax}} * 1000);
 
 						$('#count-text').show();
 
