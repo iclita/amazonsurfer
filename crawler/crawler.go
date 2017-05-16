@@ -217,7 +217,10 @@ func (crw *Crawler) scrape(link string, prods chan<- Product, client *http.Clien
 						if err != nil {
 							log.Println(err)
 						} else {
-							prods <- p
+							// If product is valid send it
+							if p.isValid(crw.opts) {
+								prods <- p
+							}
 						}
 					}
 				}

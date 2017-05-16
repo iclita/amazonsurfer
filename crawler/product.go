@@ -281,3 +281,51 @@ func getProduct(link string, client *http.Client, done <-chan struct{}) (Product
 		return prod, nil
 	}
 }
+
+// isValid checks if a product is valid correspondign to the user selected options
+func (prod *Product) isValid(opts options) bool {
+	// Calculate corrected options with tolerance
+	minPrice := (1 - opts.tolerance/100) * opts.minPrice
+	maxPrice := (1 + opts.tolerance/100) * opts.maxPrice
+
+	minBSR := (1 - opts.tolerance/100) * float64(opts.minBSR)
+	maxBSR := (1 + opts.tolerance/100) * float64(opts.maxBSR)
+
+	minReviews := (1 - opts.tolerance/100) * float64(opts.minReviews)
+	maxReviews := (1 + opts.tolerance/100) * float64(opts.maxReviews)
+
+	maxLength := (1 + opts.tolerance/100) * opts.maxLength
+	maxWidth := (1 + opts.tolerance/100) * opts.maxWidth
+	maxHeight := (1 + opts.tolerance/100) * opts.maxHeight
+	maxWeight := (1 + opts.tolerance/100) * opts.maxWeight
+
+	if prod.Price < minPrice || prod.Price > maxPrice {
+		return false
+	}
+
+	if float64(prod.BSR) < minBSR || float64(prod.BSR) > maxBSR {
+		return false
+	}
+
+	if float64(prod.Reviews) < minReviews || float64(prod.Reviews) > maxReviews {
+		return false
+	}
+
+	if prod.Length > maxLength {
+		return false
+	}
+
+	if prod.Width > maxWidth {
+		return false
+	}
+
+	if prod.Height > maxHeight {
+		return false
+	}
+
+	if prod.Weight > maxWeight {
+		return false
+	}
+
+	return true
+}
