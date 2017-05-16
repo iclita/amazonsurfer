@@ -165,7 +165,6 @@ func (crw *Crawler) scrape(link string, prods chan<- Product, client *http.Clien
 		pg := strconv.Itoa(page)
 		q := url.Values{}
 		q.Set("_encoding", "UTF8")
-		q.Set("ajax", "1")
 		q.Set("pg", pg)
 		plink := link + "?" + q.Encode()
 
