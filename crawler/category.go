@@ -24,20 +24,7 @@ var appliances = category{
 	id:   1,
 	name: "Appliances",
 	slug: "appliances",
-	subs: []category{
-		category{
-			3741261,
-			"Cooktops",
-			"Best-Sellers-Appliances-Cooktops",
-			nil,
-		},
-		category{
-			3741281,
-			"Built-In Dishwashers",
-			"Best-Sellers-Appliances-Built-Dishwashers",
-			nil,
-		},
-	},
+	subs: nil,
 }
 
 var appsGames = category{
@@ -58,7 +45,14 @@ var automotive = category{
 	id:   4,
 	name: "Automotive",
 	slug: "automotive",
-	subs: nil,
+	subs: []category{
+		category{
+			15718281,
+			"Cleaning Kits",
+			"Best-Sellers-Automotive-Cleaning-Kits",
+			nil,
+		},
+	},
 }
 
 var baby = category{
@@ -355,15 +349,17 @@ func filterCategories(catIDs []string) ([]category, error) {
 		return nil, nil
 	}
 	cats := make([]category, len(catIDs))
+	i := 0
 	for _, id := range catIDs {
 		id, err := strconv.ParseUint(id, 10, 8)
 		if err != nil {
 			return nil, err
 		}
 		catID := uint8(id)
-		for i, c := range categories {
+		for _, c := range categories {
 			if catID == uint8(c.id) {
 				cats[i] = c
+				i++
 				break
 			}
 		}

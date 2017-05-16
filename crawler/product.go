@@ -54,6 +54,8 @@ func findPrice(doc *goquery.Document) float64 {
 		log.Println("Error parsing price", strPrice)
 		return price
 	}
+	// Replace any comma with empty space to avoid parse errors
+	strPrice = strings.Replace(strPrice, ",", "", -1)
 	// Check if this a price range ($10.00 - $15.99)
 	if strings.Contains(strPrice, "-") {
 		ps := strings.Split(strPrice, "-")
@@ -67,12 +69,12 @@ func findPrice(doc *goquery.Document) float64 {
 
 		lowPrice, err := strconv.ParseFloat(lowStrPrice, 64)
 		if err != nil {
-			log.Println("Error parsing low price")
+			log.Printf("Error parsing low price %s: %s\n", lowStrPrice, err.Error())
 			return price
 		}
 		highPrice, err := strconv.ParseFloat(highStrPrice, 64)
 		if err != nil {
-			log.Println("Error parsing high price")
+			log.Printf("Error parsing high price %s: %s\n", highStrPrice, err.Error())
 			return price
 		}
 		price = (lowPrice + highPrice) / 2
@@ -84,7 +86,7 @@ func findPrice(doc *goquery.Document) float64 {
 		strPrice = strings.Replace(strPrice, ",", "", -1)
 		numPrice, err := strconv.ParseFloat(strPrice, 64)
 		if err != nil {
-			log.Println("Error parsing price", strPrice)
+			log.Printf("Error parsing price %s: %s\n", strPrice, err.Error())
 			return price
 		}
 		price = numPrice
@@ -103,6 +105,8 @@ func findReviews(doc *goquery.Document) uint {
 		log.Println("Error parsing reviews", strReviews)
 		return reviews
 	}
+	// Replace any comma with empty space to avoid parse errors
+	strReviews = strings.Replace(strReviews, ",", "", -1)
 	// If so, carry on with extracting the number of reviews
 	// We will have something like '150 customer reviews'
 	rs := strings.Split(strReviews, " ")
@@ -111,7 +115,7 @@ func findReviews(doc *goquery.Document) uint {
 	// Parse the price number
 	numReviews, err := strconv.ParseUint(strReviews, 10, 64)
 	if err != nil {
-		log.Println("Error parsing reviews", strReviews)
+		log.Printf("Error parsing reviews %s: %s\n", strReviews, err.Error())
 		return reviews
 	}
 
@@ -139,21 +143,26 @@ func findDimensions(container string) (float64, float64, float64) {
 	strWidth := strings.TrimSpace(ds[1])
 	strHeight := strings.TrimSpace(strings.Replace(ds[2], "inches", "", -1))
 
+	// Replace any comma with empty space to avoid parse errors
+	strLength = strings.Replace(strLength, ",", "", -1)
+	strWidth = strings.Replace(strWidth, ",", "", -1)
+	strHeight = strings.Replace(strHeight, ",", "", -1)
+
 	numLength, err := strconv.ParseFloat(strLength, 64)
 	if err != nil {
-		log.Println("Error parsing length", strLength)
+		log.Printf("Error parsing length %s: %s\n", strLength, err.Error())
 		return 0, 0, 0
 	}
 
 	numWidth, err := strconv.ParseFloat(strWidth, 64)
 	if err != nil {
-		log.Println("Error parsing width", strWidth)
+		log.Printf("Error parsing width %s: %s\n", strWidth, err.Error())
 		return 0, 0, 0
 	}
 
 	numHeight, err := strconv.ParseFloat(strHeight, 64)
 	if err != nil {
-		log.Println("Error parsing height", strHeight)
+		log.Printf("Error parsing height %s: %s\n", strHeight, err.Error())
 		return 0, 0, 0
 	}
 
@@ -182,10 +191,12 @@ func findWeight(container string) float64 {
 	ws := strings.Split(strWeight, " ")
 
 	strWeight = strings.TrimSpace(ws[0])
+	// Replace any comma with empty space to avoid parse errors
+	strWeight = strings.Replace(strWeight, ",", "", -1)
 
 	numWeight, err := strconv.ParseFloat(strWeight, 64)
 	if err != nil {
-		log.Println("Error parsing weight", strWeight)
+		log.Printf("Error parsing weight %s: %s\n", strWeight, err.Error())
 		return 0
 	}
 
@@ -211,10 +222,12 @@ func findBSR(container string) uint {
 	}
 	// Remove the first character which is #
 	strBSR = strBSR[1:]
+	// Replace any comma with empty space to avoid parse errors
+	strBSR = strings.Replace(strBSR, ",", "", -1)
 	// Parse the price number
 	numBSR, err := strconv.ParseUint(strBSR, 10, 64)
 	if err != nil {
-		log.Println("Error parsing BSR", strBSR)
+		log.Printf("Error parsing BSR %s: %s\n", strBSR, err.Error())
 		return 0
 	}
 
@@ -232,7 +245,7 @@ func getProduct(link string, client *http.Client, done <-chan struct{}) (Product
 	// Send the request
 	res, err := client.Do(req)
 	if err != nil {
-		return Product{}, fmt.Errorf("Request error at url %s", link)
+		return Product{}, fmt.Errorf("Request error at url %s: %s", link, err.Error())
 	}
 	// Return error if no product was found
 	if res.StatusCode != http.StatusOK {
@@ -246,7 +259,7 @@ func getProduct(link string, client *http.Client, done <-chan struct{}) (Product
 		// Parse the DOM
 		doc, err := goquery.NewDocumentFromReader(res.Body)
 		if err != nil {
-			return Product{}, fmt.Errorf("Could not parse document at url %s", link)
+			return Product{}, fmt.Errorf("Parse document error at url %s: %s", link, err.Error())
 		}
 		defer res.Body.Close()
 
