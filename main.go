@@ -92,7 +92,7 @@ func start(w http.ResponseWriter, r *http.Request) {
 	// Wait for incoming products
 	for p := range prods {
 		if err := conn.WriteJSON(p); err != nil {
-			log.Println(err)
+			log.Println("Send error:", err)
 		}
 	}
 }
