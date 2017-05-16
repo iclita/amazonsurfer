@@ -1,6 +1,7 @@
 package crawler
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"net/http"
@@ -222,7 +223,7 @@ func findBSR(container string) uint {
 
 // getProduct fetches the product found at the given link
 // It attaches all the necessary data to the product type
-func getProduct(link string, client *http.Client) (Product, error) {
+func getProduct(link string, client *http.Client, done <-chan struct{}) (Product, error) {
 	req, err := http.NewRequest(http.MethodGet, link, nil)
 
 	if err != nil {
@@ -237,40 +238,46 @@ func getProduct(link string, client *http.Client) (Product, error) {
 	if res.StatusCode != http.StatusOK {
 		return Product{}, fmt.Errorf("Product not found at url %s", link)
 	}
-	// Parse the DOM
-	doc, err := goquery.NewDocumentFromReader(res.Body)
-	if err != nil {
-		return Product{}, fmt.Errorf("Could not parse document at url %s", link)
+	// Check for exit signal
+	select {
+	case <-done:
+		return Product{}, errors.New("Connection closed")
+	default:
+		// Parse the DOM
+		doc, err := goquery.NewDocumentFromReader(res.Body)
+		if err != nil {
+			return Product{}, fmt.Errorf("Could not parse document at url %s", link)
+		}
+		defer res.Body.Close()
+
+		// Find product attributes
+		name := findName(doc)
+		price := findPrice(doc)
+		reviews := findReviews(doc)
+
+		// Get the container from the HTML document
+		container := doc.Find("#dp-container").Text()
+		// Replace all , with empty space to easily find every number
+		container = strings.Replace(container, ",", "", -1)
+		// Fetch all 3 dimensions
+		length, width, height := findDimensions(container)
+		// Fetch product shipping weight
+		weight := findWeight(container)
+		// Fetch BSR
+		bsr := findBSR(container)
+
+		prod := Product{
+			Name:    name,
+			Link:    link,
+			Price:   price,
+			BSR:     bsr,
+			Reviews: reviews,
+			Length:  length,
+			Width:   width,
+			Height:  height,
+			Weight:  weight,
+		}
+
+		return prod, nil
 	}
-	defer res.Body.Close()
-
-	// Find product attributes
-	name := findName(doc)
-	price := findPrice(doc)
-	reviews := findReviews(doc)
-
-	// Get the container from the HTML document
-	container := doc.Find("#dp-container").Text()
-	// Replace all , with empty space to easily find every number
-	container = strings.Replace(container, ",", "", -1)
-	// Fetch all 3 dimensions
-	length, width, height := findDimensions(container)
-	// Fetch product shipping weight
-	weight := findWeight(container)
-	// Fetch BSR
-	bsr := findBSR(container)
-
-	prod := Product{
-		Name:    name,
-		Link:    link,
-		Price:   price,
-		BSR:     bsr,
-		Reviews: reviews,
-		Length:  length,
-		Width:   width,
-		Height:  height,
-		Weight:  weight,
-	}
-
-	return prod, nil
 }

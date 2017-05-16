@@ -16,7 +16,7 @@ import (
 // Crawler scrapes Amazon website for products
 type Crawler struct {
 	opts    options
-	done    chan struct{}
+	Done    chan struct{}
 	conn    *websocket.Conn
 	Timeout time.Duration
 }
@@ -202,26 +202,27 @@ func (crw *Crawler) scrape(link string, prods chan<- Product, client *http.Clien
 		sel := doc.Find("div.zg_itemWrapper > div")
 		for i := range sel.Nodes {
 			select {
-			case <-crw.done:
+			case <-crw.Done:
 				return
 			default:
 				// For each item found, get the url
 				link, ok := sel.Eq(i).Find("a").Attr("href")
 				if !ok {
 					log.Println(err)
-				}
-				link = formatLink(link)
-				if !prodLinks[link] {
-					prodLinks[link] = true
-					p, err := getProduct(link, client)
-					if err != nil {
-						log.Println(err)
-					} else {
-						prods <- p
+				} else {
+					link = formatLink(link)
+					if !prodLinks[link] {
+						prodLinks[link] = true
+						p, err := getProduct(link, client, crw.Done)
+						if err != nil {
+							log.Println(err)
+						} else {
+							prods <- p
+						}
 					}
-					// Sleep between requests
-					sleep(minSleep, maxSleep)
 				}
+				// Sleep between requests
+				sleep(minSleep, maxSleep)
 			}
 		}
 		// Go to the next page
@@ -237,7 +238,7 @@ func (crw *Crawler) Run(conn *websocket.Conn, prods chan Product) {
 	// Hold a reference to the current connection
 	crw.conn = conn
 	// Reset Done channel to initial state so that calls to this channel block again
-	crw.done = nil
+	crw.Done = nil
 	// Seed the random source to get truly random numbers
 	rand.Seed(time.Now().UTC().UnixNano())
 	// Get all the links that need to be scraped
@@ -265,8 +266,8 @@ func (crw *Crawler) Run(conn *websocket.Conn, prods chan Product) {
 // It then closes the current websockets connection
 func (crw *Crawler) Stop() {
 	// Make a new Done channel and close it to signal child goroutines to stop
-	crw.done = make(chan struct{})
-	close(crw.done)
+	crw.Done = make(chan struct{})
+	close(crw.Done)
 	// Close the connection if it's still opened
 	// The connection maybe already closed by the browser
 	// So a check must be made to ensure the connection still exists

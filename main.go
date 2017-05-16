@@ -91,8 +91,14 @@ func start(w http.ResponseWriter, r *http.Request) {
 	go crw.Run(conn, prods)
 	// Wait for incoming products
 	for p := range prods {
-		if err := conn.WriteJSON(p); err != nil {
-			log.Println("Send error:", err)
+		// Check for exit signal before sending the product
+		select {
+		case <-crw.Done:
+			return
+		default:
+			if err := conn.WriteJSON(p); err != nil {
+				log.Println("Send error:", err)
+			}
 		}
 	}
 }
