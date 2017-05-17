@@ -198,6 +198,8 @@ func (crw *Crawler) scrape(link string, prods chan<- Product, client *http.Clien
 			case <-crw.Done:
 				return
 			default:
+				// Sleep between requests
+				sleep(minSleep, maxSleep)
 				// For each item found, get the url
 				link, ok := sel.Eq(i).Find("a").Attr("href")
 				if !ok {
@@ -217,8 +219,6 @@ func (crw *Crawler) scrape(link string, prods chan<- Product, client *http.Clien
 						}
 					}
 				}
-				// Sleep between requests
-				sleep(minSleep, maxSleep)
 			}
 		}
 		// Go to the next page
@@ -231,12 +231,12 @@ func (crw *Crawler) scrape(link string, prods chan<- Product, client *http.Clien
 // Run searches for products and sends them on the channel to be received in the main goroutine
 // It sends valid products in the frontend through the websocket connection
 func (crw *Crawler) Run(conn *websocket.Conn, prods chan Product) {
+	// Seed the random source to get truly random numbers
+	rand.Seed(time.Now().UTC().UnixNano())
 	// Hold a reference to the current connection
 	crw.conn = conn
 	// Reset Done channel to initial state so that calls to this channel block again
 	crw.Done = nil
-	// Seed the random source to get truly random numbers
-	rand.Seed(time.Now().UTC().UnixNano())
 	// Get all the links that need to be scraped
 	links := crw.getLinks()
 	// Add all goroutines to the wait group
