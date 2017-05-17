@@ -41,7 +41,7 @@ type options struct {
 // The crawler will choose a random number of seconds to sleep
 const (
 	minSleep = 10
-	maxSleep = 20
+	maxSleep = 60
 )
 
 // wg waits for all goroutines to finish
