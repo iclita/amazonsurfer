@@ -189,7 +189,7 @@ func (crw *Crawler) scrape(link string, prods chan<- Product, client *http.Clien
 		// This way we make sure that no duplicate links are inserted
 		prodLinks := make(map[string]bool)
 		// Find the product links
-		sel := doc.Find("div.zg_itemWrapper > div")
+		sel := doc.Find(".zg_itemWrapper")
 		for i := range sel.Nodes {
 			select {
 			case <-crw.Done:
