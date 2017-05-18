@@ -242,6 +242,8 @@ func getProduct(link string, client *http.Client, done <-chan struct{}) (Product
 	if err != nil {
 		log.Fatal(err)
 	}
+	// Set User-Agent to simulate a request coming from a browser
+	req.Header.Set("User-Agent", userAgent())
 	// Send the request
 	res, err := client.Do(req)
 	if err != nil {
