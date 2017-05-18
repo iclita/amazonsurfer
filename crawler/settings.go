@@ -1,5 +1,13 @@
 package crawler
 
+// The min and max limits to sleep between requests
+// The crawler will choose a random number of seconds to sleep
+const (
+	minSleep = 10
+	maxSleep = 60
+)
+
+// Request headers to simulate a real browser
 var headers = map[string]string{
 	"Accept":          "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
 	"Accept-Encoding": "gzip, deflate, sdch, br",

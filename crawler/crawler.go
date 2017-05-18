@@ -36,13 +36,6 @@ type options struct {
 	tolerance  float64
 }
 
-// The min and max limits to sleep between requests
-// The crawler will choose a random number of seconds to sleep
-const (
-	minSleep = 10
-	maxSleep = 60
-)
-
 // wg waits for all goroutines to finish
 var wg sync.WaitGroup
 
