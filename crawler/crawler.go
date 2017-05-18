@@ -2,7 +2,6 @@ package crawler
 
 import (
 	"log"
-	"math/rand"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -231,8 +230,6 @@ func (crw *Crawler) scrape(link string, prods chan<- Product, client *http.Clien
 // Run searches for products and sends them on the channel to be received in the main goroutine
 // It sends valid products in the frontend through the websocket connection
 func (crw *Crawler) Run(conn *websocket.Conn, prods chan Product) {
-	// Seed the random source to get truly random numbers
-	rand.Seed(time.Now().UTC().UnixNano())
 	// Hold a reference to the current connection
 	crw.conn = conn
 	// Reset Done channel to initial state so that calls to this channel block again

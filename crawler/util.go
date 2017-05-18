@@ -29,6 +29,9 @@ func formatLink(link string) string {
 // sleep simply puts the program to sleep for a random number of seconds
 // between min and max when looking for products
 func sleep(min int, max int) {
+	// Seed the random source to get truly random numbers
+	rand.Seed(time.Now().UTC().UnixNano())
+	// Calculate random delay between requests
 	delay := min + rand.Intn(max-min)
 	time.Sleep(time.Duration(delay) * time.Second)
 }
