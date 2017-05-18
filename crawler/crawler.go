@@ -172,8 +172,11 @@ func (crw *Crawler) scrape(link string, prods chan<- Product, client *http.Clien
 		if err != nil {
 			log.Fatal(err)
 		}
-		// Set User-Agent to simulate a request coming from a browser
-		req.Header.Set("User-Agent", userAgent())
+		// Set proper headers to simulate a request coming from a real browser
+		req.Header.Set("Accept", headers["Accept"])
+		req.Header.Set("Accept-Encoding", headers["Accept-Encoding"])
+		req.Header.Set("Accept-Language", headers["Accept-Language"])
+		req.Header.Set("User-Agent", headers["User-Agent"])
 		// Send the request
 		res, err := client.Do(req)
 		if err != nil {
