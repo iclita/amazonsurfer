@@ -9,8 +9,8 @@ import (
 	"os"
 	"path/filepath"
 
-	"bitbucket.org/iulianclita/amazonsurfer/crawler"
 	"github.com/gorilla/websocket"
+	"github.com/iulianclita/amazonsurfer/crawler"
 )
 
 // Template container
